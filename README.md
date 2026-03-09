@@ -77,7 +77,7 @@ GTAIM is a web tool that automatically generates a structured GTM Playbook from 
 | Environment | Branch | URL |
 |---|---|---|
 | Production | `main` | [gtaim.io](https://gtaim.io) |
-| Preview | `develop` | `gtaim-akh43vrdp-tdebrouckers-projects.vercel.app` |
+| Preview | `develop` | `gtaim-git-develop-tdebrouckers-projects.vercel.app` |
 
 ---
 

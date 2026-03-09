@@ -5,7 +5,7 @@ GTAIM est un outil web qui génère des GTM Playbooks depuis une URL produit.
 - **Stack** : Next.js + Supabase + Vercel
 - **Repo** : github.com/tdebroucker/gtaim
 - **Production** : gtaim.io (branche `main`)
-- **Preview** : gtaim-akh43vrdp-tdebrouckers-projects.vercel.app (branche `develop`)
+- **Preview** : gtaim-git-develop-tdebrouckers-projects.vercel.app (branche `develop`)
 - **Tristan n'a pas de compétences en dev** — expliquer les concepts simplement
 
 ## Règles de travail
