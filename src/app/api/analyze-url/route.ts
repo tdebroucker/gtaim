@@ -38,10 +38,7 @@ export async function POST(req: NextRequest) {
     const html = await pageRes.text();
     pageText = extractText(html);
   } catch {
-    return NextResponse.json(
-      { error: "Could not reach this URL. Please fill in the fields manually." },
-      { status: 200 }
-    );
+    return NextResponse.json({ error: "url_unreachable" }, { status: 200 });
   }
 
   // 2. Call Anthropic API
@@ -82,6 +79,9 @@ Website content: ${pageText}`,
   }
 
   // 3. Parse and return
+  if (anthropicRes.status === 401) {
+    return NextResponse.json({ error: "auth_error" }, { status: 200 });
+  }
   if (!anthropicRes.ok) {
     return NextResponse.json(
       { error: "Analysis failed. Please fill in the fields manually." },
