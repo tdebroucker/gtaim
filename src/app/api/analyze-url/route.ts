@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
 function extractText(html: string): string {
-  // Remove script and style blocks entirely
   let text = html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<noscript[\s\S]*?<\/noscript>/gi, " ");
 
-  // Strip all remaining tags
   text = text.replace(/<[^>]+>/g, " ");
 
-  // Decode common HTML entities
   text = text
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
@@ -19,10 +16,14 @@ function extractText(html: string): string {
     .replace(/&#39;/g, "'")
     .replace(/&nbsp;/g, " ");
 
-  // Collapse whitespace and trim
   text = text.replace(/\s+/g, " ").trim();
 
   return text.slice(0, 3000);
+}
+
+function stripMarkdownJson(text: string): string {
+  // Remove ```json ... ``` or ``` ... ``` wrappers if present
+  return text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
 }
 
 export async function POST(req: NextRequest) {
@@ -37,7 +38,9 @@ export async function POST(req: NextRequest) {
     });
     const html = await pageRes.text();
     pageText = extractText(html);
-  } catch {
+    console.log("URL fetch success, content length:", pageText.length);
+  } catch (err) {
+    console.log("URL fetch failed:", String(err));
     return NextResponse.json({ error: "url_unreachable" }, { status: 200 });
   }
 
@@ -71,7 +74,8 @@ Website content: ${pageText}`,
         ],
       }),
     });
-  } catch {
+  } catch (err) {
+    console.log("Anthropic fetch failed:", String(err));
     return NextResponse.json(
       { error: "Analysis failed. Please fill in the fields manually." },
       { status: 200 }
@@ -80,9 +84,11 @@ Website content: ${pageText}`,
 
   // 3. Parse and return
   if (anthropicRes.status === 401) {
+    console.log("Anthropic returned 401 — invalid API key");
     return NextResponse.json({ error: "auth_error" }, { status: 200 });
   }
   if (!anthropicRes.ok) {
+    console.log("Anthropic returned non-ok status:", anthropicRes.status);
     return NextResponse.json(
       { error: "Analysis failed. Please fill in the fields manually." },
       { status: 200 }
@@ -91,10 +97,20 @@ Website content: ${pageText}`,
 
   try {
     const anthropicData = await anthropicRes.json();
+    console.log("Anthropic raw response:", JSON.stringify(anthropicData));
+
     const raw: string = anthropicData.content?.[0]?.text ?? "";
-    const parsed = JSON.parse(raw);
+    console.log("Raw text from Claude:", raw);
+
+    const cleaned = stripMarkdownJson(raw);
+    console.log("Cleaned text before parse:", cleaned);
+
+    const parsed = JSON.parse(cleaned);
+    console.log("Parsed result:", JSON.stringify(parsed));
+
     return NextResponse.json(parsed, { status: 200 });
-  } catch {
+  } catch (err) {
+    console.log("JSON parse failed:", String(err));
     return NextResponse.json(
       { error: "Analysis failed. Please fill in the fields manually." },
       { status: 200 }
