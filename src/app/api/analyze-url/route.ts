@@ -30,7 +30,8 @@ export async function POST(req: NextRequest) {
   const { url, apiKey }: { url: string; apiKey: string } = await req.json();
 
   // 1. Fetch and extract page content
-  let pageText: string;
+  let pageText = "";
+  let urlFailed = false;
   try {
     const pageRes = await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; GTAIMBot/1.0)" },
@@ -40,9 +41,27 @@ export async function POST(req: NextRequest) {
     pageText = extractText(html);
     console.log("URL fetch success, content length:", pageText.length);
   } catch (err) {
-    console.log("URL fetch failed:", String(err));
-    return NextResponse.json({ error: "url_unreachable" }, { status: 200 });
+    console.log("URL fetch failed, continuing with domain inference:", String(err));
+    urlFailed = true;
   }
+
+  // Build prompt — infer from domain if page content unavailable
+  const userPrompt = pageText
+    ? `From this website content, return ONLY a valid JSON object with no markdown formatting and no explanation:
+{
+  "productName": "the product name",
+  "valueProposition": "one benefit-focused sentence, no marketing fluff",
+  "targetSectors": "sector(s) and typical company size",
+  "customerType": "PME or Mid-Market or Enterprise"
+}
+Website content: ${pageText}`
+    : `The website at "${url}" could not be fetched. Based only on the domain name and URL path, infer best-effort values and return ONLY a valid JSON object with no markdown formatting and no explanation:
+{
+  "productName": "inferred product name from domain",
+  "valueProposition": "one plausible benefit-focused sentence based on the domain",
+  "targetSectors": "plausible sector(s) based on the domain",
+  "customerType": "PME or Mid-Market or Enterprise"
+}`;
 
   // 2. Call Anthropic API
   let anthropicRes: Response;
@@ -59,19 +78,7 @@ export async function POST(req: NextRequest) {
         max_tokens: 1000,
         system:
           "You are a GTM analyst. Analyze website content and extract key product information. The default market is France.",
-        messages: [
-          {
-            role: "user",
-            content: `From this website content, return ONLY a valid JSON object with no markdown formatting and no explanation:
-{
-  "productName": "the product name",
-  "valueProposition": "one benefit-focused sentence, no marketing fluff",
-  "targetSectors": "sector(s) and typical company size",
-  "customerType": "PME or Mid-Market or Enterprise"
-}
-Website content: ${pageText}`,
-          },
-        ],
+        messages: [{ role: "user", content: userPrompt }],
       }),
     });
   } catch (err) {
@@ -108,7 +115,7 @@ Website content: ${pageText}`,
     const parsed = JSON.parse(cleaned);
     console.log("Parsed result:", JSON.stringify(parsed));
 
-    return NextResponse.json(parsed, { status: 200 });
+    return NextResponse.json({ ...parsed, urlFailed }, { status: 200 });
   } catch (err) {
     console.log("JSON parse failed:", String(err));
     return NextResponse.json(
