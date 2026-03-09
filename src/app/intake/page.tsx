@@ -5,7 +5,7 @@ import { useState } from "react";
 type Step1Data = {
   productName: string;
   valueProposition: string;
-  targetSector: string;
+  targetSectors: string;
   customerType: string;
 };
 
@@ -19,7 +19,7 @@ type Step2Data = {
 const initialStep1: Step1Data = {
   productName: "",
   valueProposition: "",
-  targetSector: "",
+  targetSectors: "",
   customerType: "",
 };
 
@@ -52,7 +52,7 @@ export default function IntakePage() {
       setStep1({
         productName: data.productName ?? "",
         valueProposition: data.valueProposition ?? "",
-        targetSector: data.targetSector ?? "",
+        targetSectors: data.targetSectors ?? "",
         customerType: data.customerType ?? "",
       });
       setStep(1);
@@ -352,9 +352,9 @@ export default function IntakePage() {
                 <label>Target sector(s)</label>
                 <input
                   type="text"
-                  value={step1.targetSector}
+                  value={step1.targetSectors}
                   onChange={(e) =>
-                    setStep1((s) => ({ ...s, targetSector: e.target.value }))
+                    setStep1((s) => ({ ...s, targetSectors: e.target.value }))
                   }
                   placeholder="e.g. HR Tech, Mid-Market SaaS"
                 />
