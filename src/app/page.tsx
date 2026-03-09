@@ -119,31 +119,23 @@ export default function Home() {
           line-height: 1.7;
           margin-bottom: 48px;
         }
-        .btn-soon {
+        .btn-cta {
           display: inline-flex;
           align-items: center;
-          gap: 8px;
-          background: var(--bg2);
-          color: var(--muted);
-          border: 1px solid var(--border);
+          background: #FF6B35;
+          color: #FFFFFF;
+          border: none;
           border-radius: 4px;
-          padding: 14px 32px;
+          padding: 14px 28px;
           font-family: 'Inter', sans-serif;
           font-size: 15px;
           font-weight: 600;
-          cursor: default;
+          cursor: pointer;
           letter-spacing: 0.3px;
+          text-decoration: none;
         }
-        .btn-soon .dot {
-          width: 7px;
-          height: 7px;
-          background: var(--accent);
-          border-radius: 50%;
-          animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.4; transform: scale(0.8); }
+        .btn-cta:hover {
+          background: #e85e2a;
         }
 
         /* HOW IT WORKS */
@@ -368,10 +360,9 @@ export default function Home() {
           Paste your product URL. Answer 8 questions. Get a complete,
           structured Go-To-Market Playbook — powered by Claude AI.
         </p>
-        <button className="btn-soon">
-          <span className="dot"></span>
-          App coming soon
-        </button>
+        <a href="/intake" className="btn-cta">
+          Generate my GTM Playbook →
+        </a>
         <p style={{marginTop: "20px", fontSize: "13px", color: "var(--muted)"}}>
           🇫🇷 Starting with France — TAM/SAM/SOM powered by SIRENE (INSEE) data.
         </p>
