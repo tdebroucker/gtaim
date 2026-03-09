@@ -372,6 +372,9 @@ export default function Home() {
           <span className="dot"></span>
           App coming soon
         </button>
+        <p style={{marginTop: "20px", fontSize: "13px", color: "var(--muted)"}}>
+          🇫🇷 Starting with France — TAM/SAM/SOM powered by SIRENE (INSEE) data.
+        </p>
       </section>
 
       <div className="divider" />
@@ -429,6 +432,7 @@ export default function Home() {
               <span className="tag">Segments</span>
               <span className="tag">ICP</span>
               <span className="tag">TAM/SAM/SOM</span>
+              <span className="tag">🇫🇷 France-first</span>
             </div>
           </div>
           <div className="output-card">
