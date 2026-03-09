@@ -476,10 +476,12 @@ export default function Home() {
       {/* FOOTER */}
       <footer className="footer">
         <div className="footer-left">
-          <span className="footer-name">GTAIM</span>
+          <span className="footer-name">GTAIM — {new Date().getFullYear()}</span>
           <span className="footer-tagline">AI-powered GTM, right on target.</span>
         </div>
-        <span className="footer-right">gtaim.io — {new Date().getFullYear()}</span>
+        <span className="footer-right">
+          A personal project by Tristan de Broucker — putting Claude Code to work for the GTM community.
+        </span>
       </footer>
     </>
   );
