@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <radialGradient id="gradOuter" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#F07030"/>
+      <stop offset="100%" stop-color="#B83A00"/>
+    </radialGradient>
+
+    <radialGradient id="gradMid" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#F89060"/>
+      <stop offset="100%" stop-color="#D95A10"/>
+    </radialGradient>
+
+    <radialGradient id="gradInner" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FBBB90"/>
+      <stop offset="100%" stop-color="#F07040"/>
+    </radialGradient>
+
+    <radialGradient id="gradCenter" cx="38%" cy="32%" r="65%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F5C4A0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Outer disc -->
+  <circle cx="16" cy="16" r="15" fill="url(#gradOuter)"/>
+
+  <!-- Ring 2 -->
+  <circle cx="16" cy="16" r="10.5" fill="url(#gradMid)"/>
+
+  <!-- Ring 3 thin -->
+  <circle cx="16" cy="16" r="7.5" fill="url(#gradInner)"/>
+
+  <!-- Center -->
+  <circle cx="16" cy="16" r="4.5" fill="url(#gradCenter)"/>
+</svg>
