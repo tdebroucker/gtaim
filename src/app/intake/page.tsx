@@ -2,18 +2,13 @@
 
 import { useState } from "react";
 
+type Step = 0 | 1 | 2 | 3 | 4;
+
 type Step1Data = {
   productName: string;
   valueProposition: string;
   targetSectors: string;
   customerType: string;
-};
-
-type Step2Data = {
-  purchaseTrigger: string;
-  painPoint: string;
-  competitors: string;
-  companyStage: string;
 };
 
 const initialStep1: Step1Data = {
@@ -23,30 +18,50 @@ const initialStep1: Step1Data = {
   customerType: "",
 };
 
-const initialStep2: Step2Data = {
-  purchaseTrigger: "",
-  painPoint: "",
-  competitors: "",
-  companyStage: "",
-};
+const URL_REGEX = /^https?:\/\/([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#\-_]*)?$/i;
 
 export default function IntakePage() {
-  const [step, setStep] = useState<0 | 1 | 2>(0);
+  const [step, setStep] = useState<Step>(0);
+
+  // Step 0 state
   const [url, setUrl] = useState("");
   const [apiKey, setApiKey] = useState("");
+  const [urlError, setUrlError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [step1, setStep1] = useState<Step1Data>(initialStep1);
-  const [step2, setStep2] = useState<Step2Data>(initialStep2);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
 
-  const progressPercent = step === 1 ? 50 : step === 2 ? 100 : 0;
+  // Step 1 state
+  const [step1, setStep1] = useState<Step1Data>(initialStep1);
+
+  // Step 2–4 state
+  const [purchaseTrigger, setPurchaseTrigger] = useState("");
+  const [painPoint, setPainPoint] = useState("");
+  const [competitors, setCompetitors] = useState("");
+  const [companyStage, setCompanyStage] = useState("");
+
+  const progressPercent = step === 0 ? 0 : step * 25;
+
+  function validateUrl(value: string): boolean {
+    if (!value.trim()) {
+      setUrlError("Please enter a valid URL (e.g. https://yourproduct.com)");
+      return false;
+    }
+    if (!URL_REGEX.test(value.trim())) {
+      setUrlError("Please enter a valid URL (e.g. https://yourproduct.com)");
+      return false;
+    }
+    setUrlError("");
+    return true;
+  }
 
   async function handleAnalyze() {
+    if (!validateUrl(url)) return;
     setLoading(true);
     try {
       const res = await fetch("/api/analyze-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, apiKey }),
+        body: JSON.stringify({ url: url.trim(), apiKey }),
       });
       const data = await res.json();
       setStep1({
@@ -57,17 +72,43 @@ export default function IntakePage() {
       });
       setStep(1);
     } catch {
-      // keep loading off and stay on step 0
+      // stay on step 0
     } finally {
       setLoading(false);
     }
   }
 
-  const step2Complete =
-    step2.purchaseTrigger.trim() !== "" &&
-    step2.painPoint.trim() !== "" &&
-    step2.competitors.trim() !== "" &&
-    step2.companyStage !== "";
+  function handleReset() {
+    setStep(0);
+    setUrl("");
+    setApiKey("");
+    setUrlError("");
+    setStep1(initialStep1);
+    setPurchaseTrigger("");
+    setPainPoint("");
+    setCompetitors("");
+    setCompanyStage("");
+  }
+
+  const btnBase: React.CSSProperties = {
+    width: "100%",
+    padding: "13px 0",
+    backgroundColor: "#FF6B35",
+    color: "#FFFFFF",
+    fontFamily: "Inter, sans-serif",
+    fontWeight: 600,
+    fontSize: 15,
+    borderRadius: 4,
+    border: "none",
+    cursor: "pointer",
+    transition: "background-color 0.15s",
+  };
+
+  const btnDisabled: React.CSSProperties = {
+    ...btnBase,
+    backgroundColor: "#4A3020",
+    cursor: "not-allowed",
+  };
 
   return (
     <div
@@ -98,18 +139,13 @@ export default function IntakePage() {
           transition: border-color 0.15s;
           resize: vertical;
         }
-        input::placeholder, textarea::placeholder {
-          color: #8B8B9E;
-        }
-        input:focus, textarea:focus, select:focus {
-          border-color: #FF6B35;
-        }
-        select option {
-          background: #13131A;
-          color: #F0F0F0;
-        }
+        input::placeholder, textarea::placeholder { color: #8B8B9E; }
+        input:focus, textarea:focus, select:focus { border-color: #FF6B35; }
+        select option { background: #13131A; color: #F0F0F0; }
         label {
-          display: block;
+          display: flex;
+          align-items: center;
+          gap: 6px;
           font-family: Inter, sans-serif;
           font-size: 12px;
           font-weight: 500;
@@ -118,10 +154,12 @@ export default function IntakePage() {
           text-transform: uppercase;
           letter-spacing: 0.05em;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
-      {/* Logo / wordmark */}
-      <div
+      {/* Logo */}
+      <a
+        href="/"
         style={{
           fontFamily: "Space Grotesk, sans-serif",
           fontWeight: 700,
@@ -129,38 +167,26 @@ export default function IntakePage() {
           color: "#FF6B35",
           marginBottom: 32,
           letterSpacing: "-0.02em",
+          textDecoration: "none",
         }}
       >
         GTAIM
-      </div>
+      </a>
 
-      {/* Progress bar (only steps 1 & 2) */}
+      {/* Progress bar (steps 1–4 only) */}
       {step > 0 && (
         <div style={{ width: "100%", maxWidth: 520, marginBottom: 24 }}>
           <div
             style={{
               display: "flex",
               justifyContent: "space-between",
-              alignItems: "center",
               marginBottom: 8,
             }}
           >
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: 13,
-                color: "#8B8B9E",
-              }}
-            >
-              Step {step} of 2
+            <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#8B8B9E" }}>
+              Step {step} of 4
             </span>
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: 13,
-                color: "#8B8B9E",
-              }}
-            >
+            <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#8B8B9E" }}>
               {progressPercent}%
             </span>
           </div>
@@ -213,7 +239,6 @@ export default function IntakePage() {
             </h1>
             <p
               style={{
-                fontFamily: "Inter, sans-serif",
                 fontSize: 15,
                 color: "#8B8B9E",
                 marginBottom: 28,
@@ -223,18 +248,106 @@ export default function IntakePage() {
               Paste your product URL and we'll analyze it to pre-fill your playbook in seconds.
             </p>
 
+            {/* URL field */}
             <div style={{ marginBottom: 20 }}>
               <label>Product URL</label>
               <input
                 type="text"
                 value={url}
-                onChange={(e) => setUrl(e.target.value)}
+                onChange={(e) => {
+                  setUrl(e.target.value);
+                  if (urlError) setUrlError("");
+                }}
                 placeholder="https://yourproduct.com"
+                style={urlError ? { borderColor: "#FF4444" } : {}}
               />
+              {urlError && (
+                <p
+                  style={{
+                    fontSize: 12,
+                    color: "#FF4444",
+                    marginTop: 6,
+                    fontFamily: "Inter, sans-serif",
+                  }}
+                >
+                  {urlError}
+                </p>
+              )}
             </div>
 
+            {/* API Key field with tooltip */}
             <div style={{ marginBottom: 8 }}>
-              <label>Anthropic API Key</label>
+              <label>
+                Anthropic API Key
+                <span style={{ position: "relative", display: "inline-flex" }}>
+                  <button
+                    type="button"
+                    onMouseEnter={() => setTooltipVisible(true)}
+                    onMouseLeave={() => setTooltipVisible(false)}
+                    onClick={() => setTooltipVisible((v) => !v)}
+                    style={{
+                      width: 16,
+                      height: 16,
+                      borderRadius: "50%",
+                      border: "1px solid #2A2A3A",
+                      background: "#0A0A0F",
+                      color: "#8B8B9E",
+                      fontSize: 10,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 0,
+                      lineHeight: 1,
+                      flexShrink: 0,
+                    }}
+                    aria-label="API key help"
+                  >
+                    ?
+                  </button>
+                  {tooltipVisible && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: 22,
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        zIndex: 10,
+                        backgroundColor: "#13131A",
+                        border: "1px solid #2A2A3A",
+                        borderRadius: 8,
+                        padding: "12px 14px",
+                        maxWidth: 300,
+                        width: "max-content",
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontSize: 12,
+                          color: "#F0F0F0",
+                          lineHeight: 1.6,
+                          fontFamily: "Inter, sans-serif",
+                          fontWeight: 400,
+                          textTransform: "none",
+                          letterSpacing: "normal",
+                        }}
+                      >
+                        GTAIM uses your own Anthropic API key to analyze your product and generate
+                        your playbook. Your key is never stored on our servers.
+                        <br />
+                        <br />
+                        → Get your key at{" "}
+                        <span style={{ color: "#FF6B35" }}>console.anthropic.com</span> (API Keys →
+                        Create Key)
+                        <br />
+                        → Save it in a password manager (e.g. 1Password) for future use
+                      </p>
+                    </div>
+                  )}
+                </span>
+              </label>
               <input
                 type="password"
                 value={apiKey}
@@ -243,42 +356,21 @@ export default function IntakePage() {
               />
             </div>
 
-            <p
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: 12,
-                color: "#8B8B9E",
-                marginBottom: 28,
-              }}
-            >
+            <p style={{ fontSize: 12, color: "#8B8B9E", marginBottom: 28 }}>
               Your key is used only for this session and never stored.
             </p>
 
             <button
               onClick={handleAnalyze}
               disabled={loading || !url.trim() || !apiKey.trim()}
-              style={{
-                width: "100%",
-                padding: "13px 0",
-                backgroundColor:
-                  loading || !url.trim() || !apiKey.trim() ? "#4A3020" : "#FF6B35",
-                color: "#FFFFFF",
-                fontFamily: "Inter, sans-serif",
-                fontWeight: 600,
-                fontSize: 15,
-                borderRadius: 4,
-                border: "none",
-                cursor:
-                  loading || !url.trim() || !apiKey.trim() ? "not-allowed" : "pointer",
-                transition: "background-color 0.15s",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-              }}
+              style={
+                loading || !url.trim() || !apiKey.trim() ? btnDisabled : btnBase
+              }
             >
               {loading ? (
-                <>
+                <span
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+                >
                   <span
                     style={{
                       width: 16,
@@ -290,9 +382,8 @@ export default function IntakePage() {
                       animation: "spin 0.7s linear infinite",
                     }}
                   />
-                  <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                   Analyzing…
-                </>
+                </span>
               ) : (
                 "Analyze my product →"
               )}
@@ -303,6 +394,25 @@ export default function IntakePage() {
         {/* ───── STEP 1 ───── */}
         {step === 1 && (
           <div>
+            <button
+              onClick={() => setStep(0)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#8B8B9E",
+                fontFamily: "Inter, sans-serif",
+                fontSize: 14,
+                cursor: "pointer",
+                padding: 0,
+                marginBottom: 20,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              ← Back
+            </button>
+
             <h2
               style={{
                 fontFamily: "Space Grotesk, sans-serif",
@@ -314,14 +424,7 @@ export default function IntakePage() {
             >
               Here's what we found — confirm or adjust
             </h2>
-            <p
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: 14,
-                color: "#8B8B9E",
-                marginBottom: 28,
-              }}
-            >
+            <p style={{ fontSize: 14, color: "#8B8B9E", marginBottom: 28 }}>
               Claude analyzed your product page. Edit anything that's off.
             </p>
 
@@ -331,77 +434,184 @@ export default function IntakePage() {
                 <input
                   type="text"
                   value={step1.productName}
-                  onChange={(e) =>
-                    setStep1((s) => ({ ...s, productName: e.target.value }))
-                  }
+                  onChange={(e) => setStep1((s) => ({ ...s, productName: e.target.value }))}
                 />
               </div>
-
               <div>
                 <label>Value proposition in one sentence</label>
                 <textarea
                   rows={2}
                   value={step1.valueProposition}
-                  onChange={(e) =>
-                    setStep1((s) => ({ ...s, valueProposition: e.target.value }))
-                  }
+                  onChange={(e) => setStep1((s) => ({ ...s, valueProposition: e.target.value }))}
                 />
               </div>
-
               <div>
                 <label>Target sector(s)</label>
                 <input
                   type="text"
                   value={step1.targetSectors}
-                  onChange={(e) =>
-                    setStep1((s) => ({ ...s, targetSectors: e.target.value }))
-                  }
+                  onChange={(e) => setStep1((s) => ({ ...s, targetSectors: e.target.value }))}
                   placeholder="e.g. HR Tech, Mid-Market SaaS"
                 />
               </div>
-
               <div>
                 <label>Primary customer type</label>
                 <select
                   value={step1.customerType}
-                  onChange={(e) =>
-                    setStep1((s) => ({ ...s, customerType: e.target.value }))
-                  }
+                  onChange={(e) => setStep1((s) => ({ ...s, customerType: e.target.value }))}
                 >
-                  <option value="" disabled>
-                    Select…
-                  </option>
-                  <option value="SMB">PME</option>
+                  <option value="" disabled>Select…</option>
+                  <option value="PME">PME</option>
                   <option value="Mid-Market">Mid-Market</option>
                   <option value="Enterprise">Enterprise</option>
                 </select>
               </div>
             </div>
 
-            <button
-              onClick={() => setStep(2)}
-              style={{
-                width: "100%",
-                marginTop: 28,
-                padding: "13px 0",
-                backgroundColor: "#FF6B35",
-                color: "#FFFFFF",
-                fontFamily: "Inter, sans-serif",
-                fontWeight: 600,
-                fontSize: 15,
-                borderRadius: 4,
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
+            <button onClick={() => setStep(2)} style={{ ...btnBase, marginTop: 28 }}>
               Looks good, continue →
             </button>
+
+            <StartOver onReset={handleReset} />
           </div>
         )}
 
         {/* ───── STEP 2 ───── */}
         {step === 2 && (
           <div>
+            <button
+              onClick={() => setStep(1)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#8B8B9E",
+                fontFamily: "Inter, sans-serif",
+                fontSize: 14,
+                cursor: "pointer",
+                padding: 0,
+                marginBottom: 20,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              ← Back
+            </button>
+
+            <h2
+              style={{
+                fontFamily: "Space Grotesk, sans-serif",
+                fontSize: 22,
+                fontWeight: 600,
+                color: "#F0F0F0",
+                marginBottom: 28,
+              }}
+            >
+              Who triggers the purchase?
+            </h2>
+
+            <textarea
+              rows={5}
+              value={purchaseTrigger}
+              onChange={(e) => setPurchaseTrigger(e.target.value)}
+              placeholder="Describe the situation or context that makes someone buy your product. e.g. A startup that just raised a Seed round and needs to structure their sales process. A VP Sales with a team > 5 reps."
+            />
+
+            <button
+              onClick={() => setStep(3)}
+              disabled={!purchaseTrigger.trim()}
+              style={
+                purchaseTrigger.trim()
+                  ? { ...btnBase, marginTop: 28 }
+                  : { ...btnDisabled, marginTop: 28 }
+              }
+            >
+              Continue →
+            </button>
+
+            <StartOver onReset={handleReset} />
+          </div>
+        )}
+
+        {/* ───── STEP 3 ───── */}
+        {step === 3 && (
+          <div>
+            <button
+              onClick={() => setStep(2)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#8B8B9E",
+                fontFamily: "Inter, sans-serif",
+                fontSize: 14,
+                cursor: "pointer",
+                padding: 0,
+                marginBottom: 20,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              ← Back
+            </button>
+
+            <h2
+              style={{
+                fontFamily: "Space Grotesk, sans-serif",
+                fontSize: 22,
+                fontWeight: 600,
+                color: "#F0F0F0",
+                marginBottom: 28,
+              }}
+            >
+              What's the #1 pain point you solve?
+            </h2>
+
+            <textarea
+              rows={5}
+              value={painPoint}
+              onChange={(e) => setPainPoint(e.target.value)}
+              placeholder="Be specific. e.g. Sales reps waste 3h/week copy-pasting data between tools. No visibility on pipeline health until it's too late."
+            />
+
+            <button
+              onClick={() => setStep(4)}
+              disabled={!painPoint.trim()}
+              style={
+                painPoint.trim()
+                  ? { ...btnBase, marginTop: 28 }
+                  : { ...btnDisabled, marginTop: 28 }
+              }
+            >
+              Continue →
+            </button>
+
+            <StartOver onReset={handleReset} />
+          </div>
+        )}
+
+        {/* ───── STEP 4 ───── */}
+        {step === 4 && (
+          <div>
+            <button
+              onClick={() => setStep(3)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#8B8B9E",
+                fontFamily: "Inter, sans-serif",
+                fontSize: 14,
+                cursor: "pointer",
+                padding: 0,
+                marginBottom: 20,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              ← Back
+            </button>
+
             <h2
               style={{
                 fontFamily: "Space Grotesk, sans-serif",
@@ -411,67 +621,29 @@ export default function IntakePage() {
                 marginBottom: 8,
               }}
             >
-              A few more details to sharpen your playbook
+              Last two questions
             </h2>
-            <p
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: 14,
-                color: "#8B8B9E",
-                marginBottom: 28,
-              }}
-            >
-              These signals help Claude craft a playbook that matches your real context.
+            <p style={{ fontSize: 14, color: "#8B8B9E", marginBottom: 28 }}>
+              Almost there — just the competitive context.
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
               <div>
-                <label>Who triggers the purchase?</label>
-                <textarea
-                  rows={2}
-                  value={step2.purchaseTrigger}
-                  onChange={(e) =>
-                    setStep2((s) => ({ ...s, purchaseTrigger: e.target.value }))
-                  }
-                  placeholder="e.g. a startup that just raised, a Sales team > 5 people looking to structure their pipeline"
-                />
-              </div>
-
-              <div>
-                <label>Primary pain point you solve</label>
-                <textarea
-                  rows={2}
-                  value={step2.painPoint}
-                  onChange={(e) =>
-                    setStep2((s) => ({ ...s, painPoint: e.target.value }))
-                  }
-                  placeholder="e.g. Sales reps waste 3h/week on manual reporting"
-                />
-              </div>
-
-              <div>
                 <label>Top 2-3 competitors your prospects mention</label>
                 <input
                   type="text"
-                  value={step2.competitors}
-                  onChange={(e) =>
-                    setStep2((s) => ({ ...s, competitors: e.target.value }))
-                  }
+                  value={competitors}
+                  onChange={(e) => setCompetitors(e.target.value)}
                   placeholder="e.g. HubSpot, Pipedrive, Monday"
                 />
               </div>
-
               <div>
                 <label>Company stage</label>
                 <select
-                  value={step2.companyStage}
-                  onChange={(e) =>
-                    setStep2((s) => ({ ...s, companyStage: e.target.value }))
-                  }
+                  value={companyStage}
+                  onChange={(e) => setCompanyStage(e.target.value)}
                 >
-                  <option value="" disabled>
-                    Select…
-                  </option>
+                  <option value="" disabled>Select…</option>
                   <option value="Pre-seed">Pre-seed</option>
                   <option value="Seed">Seed</option>
                   <option value="Series A">Series A</option>
@@ -481,27 +653,42 @@ export default function IntakePage() {
             </div>
 
             <button
-              disabled={!step2Complete}
-              style={{
-                width: "100%",
-                marginTop: 28,
-                padding: "13px 0",
-                backgroundColor: step2Complete ? "#FF6B35" : "#4A3020",
-                color: "#FFFFFF",
-                fontFamily: "Inter, sans-serif",
-                fontWeight: 600,
-                fontSize: 15,
-                borderRadius: 4,
-                border: "none",
-                cursor: step2Complete ? "pointer" : "not-allowed",
-                transition: "background-color 0.15s",
-              }}
+              disabled={!competitors.trim() || !companyStage}
+              style={
+                competitors.trim() && companyStage
+                  ? { ...btnBase, marginTop: 28 }
+                  : { ...btnDisabled, marginTop: 28 }
+              }
             >
               Generate my GTM Playbook →
             </button>
+
+            <StartOver onReset={handleReset} />
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function StartOver({ onReset }: { onReset: () => void }) {
+  return (
+    <div style={{ textAlign: "center", marginTop: 20 }}>
+      <button
+        onClick={onReset}
+        style={{
+          background: "none",
+          border: "none",
+          color: "#8B8B9E",
+          fontFamily: "Inter, sans-serif",
+          fontSize: 12,
+          cursor: "pointer",
+          textDecoration: "underline",
+          padding: 0,
+        }}
+      >
+        Start over
+      </button>
     </div>
   );
 }
