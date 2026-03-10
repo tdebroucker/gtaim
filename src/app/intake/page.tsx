@@ -113,6 +113,7 @@ export default function IntakePage() {
         customerType: data.customerType ?? "",
       });
       if (data.primaryPainPoint) setPainPoint(data.primaryPainPoint);
+      if (data.purchaseTrigger) setPurchaseTrigger(data.purchaseTrigger);
       setStep(1);
     } catch {
       setUrlWarning(
@@ -573,8 +574,7 @@ export default function IntakePage() {
               </div>
               <div>
                 <label>Target sector(s)</label>
-                <input
-                  type="text"
+                <AutoTextarea
                   value={step1.targetSectors}
                   onChange={(e) => setStep1((s) => ({ ...s, targetSectors: e.target.value }))}
                   placeholder="e.g. HR Tech, Mid-Market SaaS"

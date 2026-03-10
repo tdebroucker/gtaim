@@ -52,7 +52,8 @@ Example of expected output:
   "valueProposition": "Helps sales teams close more deals by giving them a visual pipeline that shows exactly where each deal stands.",
   "targetSectors": "SMB and Mid-Market SaaS, Professional Services, Agencies",
   "customerType": "PME",
-  "primaryPainPoint": "Sales reps lose track of follow-ups and deals slip through the cracks without a structured pipeline view."
+  "primaryPainPoint": "Sales reps lose track of follow-ups and deals slip through the cracks without a structured pipeline view.",
+  "purchaseTrigger": "A startup that just hired its 3rd sales rep and realizes Excel can't track their pipeline anymore."
 }`;
 
   // Build prompt — infer from domain if page content unavailable
@@ -65,6 +66,7 @@ Required fields:
 - targetSectors: sector(s) and typical company size (e.g. "HR Tech, SMB to Mid-Market")
 - customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
 - primaryPainPoint: the #1 pain point this product solves, one concrete and specific sentence
+- purchaseTrigger: the situation or event that triggers someone to buy this product (1-2 sentences, from the customer's perspective)
 ${FEW_SHOT_EXAMPLE}
 
 Website content:
@@ -77,6 +79,7 @@ Required fields:
 - targetSectors: plausible sector(s) and company size
 - customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
 - primaryPainPoint: the most plausible pain point based on the domain
+- purchaseTrigger: the most plausible situation or event that triggers someone to buy this product (1-2 sentences)
 ${FEW_SHOT_EXAMPLE}`;
 
   // 2. Call Anthropic API
