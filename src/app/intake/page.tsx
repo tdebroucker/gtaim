@@ -51,6 +51,7 @@ export default function IntakePage() {
   // Tooltips for steps 2 & 3
   const [tooltip2, setTooltip2] = useState(false);
   const [tooltip3, setTooltip3] = useState(false);
+  const [tooltipBuyerProfile, setTooltipBuyerProfile] = useState(false);
 
   const progressPercent = step === 0 ? 0 : step * 20;
 
@@ -613,7 +614,44 @@ export default function IntakePage() {
                 />
               </div>
               <div>
-                <label>Primary customer type</label>
+                <label>
+                  Primary Buyer Profile
+                  <span style={{ position: "relative", display: "inline-flex" }}>
+                    <button
+                      type="button"
+                      onMouseEnter={() => setTooltipBuyerProfile(true)}
+                      onMouseLeave={() => setTooltipBuyerProfile(false)}
+                      onClick={() => setTooltipBuyerProfile((v) => !v)}
+                      style={{
+                        width: 16,
+                        height: 16,
+                        borderRadius: "50%",
+                        border: "1px solid rgba(255,107,53,0.4)",
+                        background: "#0A0A0F",
+                        color: "#FF6B35",
+                        fontSize: 10,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: 0,
+                        lineHeight: 1,
+                        flexShrink: 0,
+                      }}
+                      aria-label="Buyer profile help"
+                    >
+                      ?
+                    </button>
+                    {tooltipBuyerProfile && (
+                      <div style={tooltipBox}>
+                        <p style={tooltipText}>
+                          Who typically buys this product? This shapes your GTM motion recommendation.
+                        </p>
+                      </div>
+                    )}
+                  </span>
+                </label>
                 <select
                   value={step1.customerType}
                   onChange={(e) => setStep1((s) => ({ ...s, customerType: e.target.value }))}
