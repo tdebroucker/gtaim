@@ -475,7 +475,18 @@ export default function Home() {
           <span className="footer-tagline">AI-powered GTM, right on target.</span>
         </div>
         <span className="footer-right">
-          A personal project by Tristan de Broucker — putting Claude Code to work for the GTM community.
+          A personal project by{" "}
+          <a
+            href="https://www.linkedin.com/in/tdebroucker/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#FF6B35", textDecoration: "none" }}
+            onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+            onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+          >
+            Tristan de Broucker
+          </a>{" "}
+          — putting Claude Code to work for the GTM community.
         </span>
       </footer>
     </>
