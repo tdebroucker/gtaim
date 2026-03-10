@@ -262,22 +262,45 @@ export default function IntakePage() {
           letter-spacing: 0.05em;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .intake-logo { color: #F0F0F0; transition: color 0.2s ease; }
+        .intake-logo:hover { color: #FF6B35; }
       `}</style>
 
       {/* Logo */}
       <a
         href="/"
+        className="intake-logo"
         style={{
-          fontFamily: "Space Grotesk, sans-serif",
-          fontWeight: 700,
-          fontSize: 22,
-          color: "#FF6B35",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 6,
           marginBottom: 32,
-          letterSpacing: "-0.02em",
           textDecoration: "none",
+          cursor: "pointer",
         }}
       >
-        GTAIM
+        <span
+          style={{
+            fontFamily: "Space Grotesk, sans-serif",
+            fontWeight: 600,
+            fontSize: 32,
+            letterSpacing: "-0.02em",
+            lineHeight: 1,
+          }}
+        >
+          GTAIM
+        </span>
+        <span
+          style={{
+            fontFamily: "Inter, sans-serif",
+            fontSize: 14,
+            color: "#8B8B9E",
+            fontWeight: 400,
+          }}
+        >
+          Your GTM Playbook, right on target.
+        </span>
       </a>
 
       {/* Progress bar */}
