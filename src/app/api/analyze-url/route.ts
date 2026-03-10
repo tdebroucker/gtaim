@@ -18,7 +18,7 @@ function extractText(html: string): string {
 
   text = text.replace(/\s+/g, " ").trim();
 
-  return text.slice(0, 3000);
+  return text.slice(0, 15000);
 }
 
 function stripMarkdownJson(text: string): string {
@@ -45,25 +45,39 @@ export async function POST(req: NextRequest) {
     urlFailed = true;
   }
 
+  const FEW_SHOT_EXAMPLE = `
+Example of expected output:
+{
+  "productName": "Pipedrive",
+  "valueProposition": "Helps sales teams close more deals by giving them a visual pipeline that shows exactly where each deal stands.",
+  "targetSectors": "SMB and Mid-Market SaaS, Professional Services, Agencies",
+  "customerType": "PME",
+  "primaryPainPoint": "Sales reps lose track of follow-ups and deals slip through the cracks without a structured pipeline view."
+}`;
+
   // Build prompt — infer from domain if page content unavailable
   const userPrompt = pageText
-    ? `From this website content, return ONLY a valid JSON object with no markdown formatting and no explanation:
-{
-  "productName": "the product name",
-  "valueProposition": "one benefit-focused sentence, no marketing fluff",
-  "targetSectors": "sector(s) and typical company size",
-  "customerType": "PME or Mid-Market or Enterprise",
-  "primaryPainPoint": "the #1 pain point this product solves, one concrete sentence"
-}
-Website content: ${pageText}`
-    : `The website at "${url}" could not be fetched. Based only on the domain name and URL path, infer best-effort values and return ONLY a valid JSON object with no markdown formatting and no explanation:
-{
-  "productName": "inferred product name from domain",
-  "valueProposition": "one plausible benefit-focused sentence based on the domain",
-  "targetSectors": "plausible sector(s) based on the domain",
-  "customerType": "PME or Mid-Market or Enterprise",
-  "primaryPainPoint": "the most plausible pain point this product solves based on the domain"
-}`;
+    ? `Extract structured GTM information from the website content below and return it as a single valid JSON object. No markdown, no explanation, no preamble — JSON only.
+
+Required fields:
+- productName: the product or company name
+- valueProposition: one benefit-focused sentence, no marketing fluff, written from the customer's perspective
+- targetSectors: sector(s) and typical company size (e.g. "HR Tech, SMB to Mid-Market")
+- customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
+- primaryPainPoint: the #1 pain point this product solves, one concrete and specific sentence
+${FEW_SHOT_EXAMPLE}
+
+Website content:
+${pageText}`
+    : `The website at "${url}" could not be fetched. Based only on the domain name and URL path, infer the most plausible values and return a single valid JSON object. No markdown, no explanation — JSON only.
+
+Required fields:
+- productName: inferred from the domain
+- valueProposition: one plausible benefit-focused sentence
+- targetSectors: plausible sector(s) and company size
+- customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
+- primaryPainPoint: the most plausible pain point based on the domain
+${FEW_SHOT_EXAMPLE}`;
 
   // 2. Call Anthropic API
   let anthropicRes: Response;
@@ -79,7 +93,7 @@ Website content: ${pageText}`
         model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6",
         max_tokens: 1000,
         system:
-          "You are a GTM analyst. Analyze website content and extract key product information. The default market is France.",
+          "You are a GTM analyst expert. Your job is to extract structured product information from website content to pre-fill a GTM intake form. Always respond in valid JSON only, no markdown, no preamble.",
         messages: [{ role: "user", content: userPrompt }],
       }),
     });
