@@ -33,6 +33,7 @@ export default function IntakePage() {
   const [urlError, setUrlError] = useState("");
   const [apiKeyError, setApiKeyError] = useState("");
   const [urlWarning, setUrlWarning] = useState(""); // non-blocking fetch warning
+  const [urlFailed, setUrlFailed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [apiKeyTooltip, setApiKeyTooltip] = useState(false);
 
@@ -125,6 +126,7 @@ export default function IntakePage() {
       }
       if (data.companyStage) setCompanyStage(data.companyStage);
       if (data.estimatedACV) setAcv(data.estimatedACV);
+      setUrlFailed(data.urlFailed === true);
       setStep(1);
     } catch {
       setUrlWarning(
@@ -144,6 +146,7 @@ export default function IntakePage() {
     setUrlError("");
     setApiKeyError("");
     setUrlWarning("");
+    setUrlFailed(false);
     setStep1(initialStep1);
     setPurchaseTrigger("");
     setPainPoint("");
@@ -553,6 +556,22 @@ export default function IntakePage() {
         {step === 1 && (
           <div>
             <button onClick={() => setStep(0)} style={backBtn}>← Back</button>
+
+            {urlFailed && (
+              <div
+                style={{
+                  marginBottom: 24,
+                  padding: 12,
+                  backgroundColor: "#FF6B3515",
+                  border: "1px solid #FF6B35",
+                  borderRadius: 8,
+                }}
+              >
+                <p style={{ fontSize: 14, color: "#FF6B35", fontFamily: "Inter, sans-serif", lineHeight: 1.5 }}>
+                  ⚠️ We couldn't access this URL. Please fill in the fields below manually.
+                </p>
+              </div>
+            )}
 
             <h2
               style={{

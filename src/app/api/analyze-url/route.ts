@@ -77,6 +77,8 @@ Website content:
 ${pageText}`
     : `The website at "${url}" could not be fetched. Based on the domain name, URL path, and your general knowledge about this company or product category, infer the most plausible values and return a single valid JSON object. No markdown, no explanation — JSON only.
 
+IMPORTANT: The URL was not accessible. Do NOT invent or guess any product information. Only populate fields if you have verified general knowledge about this exact brand. If the domain is unknown or fictional, return empty strings for ALL fields.
+
 Required fields:
 - productName: inferred from the domain
 - valueProposition: infer the ONE core promise that unifies the product's offer. Write from the customer's perspective, benefit-focused, no marketing fluff, 1 sentence. e.g. "Teams do X without needing Y"
