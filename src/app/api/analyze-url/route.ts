@@ -48,13 +48,13 @@ export async function POST(req: NextRequest) {
   const FEW_SHOT_EXAMPLE = `
 Example of expected output:
 {
-  "productName": "Pipedrive",
-  "valueProposition": "Helps sales teams close more deals by keeping their pipeline visible and their follow-ups on track.",
-  "targetSectors": "SMB and Mid-Market SaaS, Professional Services, Agencies",
-  "customerType": "PME",
-  "primaryPainPoint": "Sales reps lose track of deals and forget follow-ups without a structured pipeline view.",
-  "purchaseTrigger": "A startup that just hired its 3rd sales rep and realizes Excel can't track their pipeline anymore.",
-  "competitors": ["Salesforce", "HubSpot", "Zoho CRM"],
+  "productName": "Pennylane",
+  "valueProposition": "Freelancers and founders manage their invoicing, accounting, and bank account in one place — without needing an accountant for daily tasks.",
+  "targetSectors": "Freelancers, early-stage startups, SMBs — France",
+  "customerType": "B2C",
+  "primaryPainPoint": "Managing invoices, VAT, and accounting across disconnected tools wastes hours every month and creates costly errors.",
+  "purchaseTrigger": "A freelancer just registered their business and needs to handle invoicing and VAT from day one without hiring an accountant.",
+  "competitors": ["Sage", "Cegid", "Indy"],
   "companyStage": "Scale-up",
   "estimatedACV": "1K-10K"
 }`;
@@ -69,9 +69,9 @@ Required fields:
 - targetSectors: sector(s) and typical company size (e.g. "HR Tech, SMB to Mid-Market")
 - customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
 - primaryPainPoint: the #1 pain point this product solves, one concrete and specific sentence
-- purchaseTrigger: the situation or event that triggers someone to buy this product (1-2 sentences, from the customer's perspective)
+- purchaseTrigger: the specific situation or event that makes someone urgently buy this product TODAY. Look for: customer testimonials, use case pages, "who is it for" sections, onboarding triggers, or "before/after" scenarios on the site. Be specific and concrete — not "a company that needs X" but the actual triggering moment. Example for Pennylane: "A freelancer or early-stage founder just registered their business and needs to handle invoicing and VAT declarations from day one without hiring an accountant." Write from the buyer's perspective, 1-2 sentences max.
 - competitors: JSON array of 2-3 competitor names ACTIVELY present on the French market today. Look for "vs [product]", "[product] alternative", comparison pages, or integration pages in the content. For well-known brands (unicorns, funded startups, market leaders), USE YOUR GENERAL KNOWLEDGE of the French competitive landscape — do not rely only on page content. Exclude companies that have withdrawn from France (e.g. QuickBooks left France in 2020). Prioritize French or European competitors over US-only players.
-- companyStage: one of "Pre-seed/Seed", "Series A/B", "Scale-up", "Enterprise". IMPORTANT: for well-known companies (e.g. a unicorn, a company with 100M€+ ARR, a widely covered brand), USE YOUR GENERAL KNOWLEDGE to infer the stage accurately — do not rely only on page content. Only fall back to page content signals (employee count, customer count, funding mentions, "trusted by X" claims) for unknown companies. Mapping: Pre-seed/Seed: <10 employees, just launched, no visible traction; Series A/B: 10-200 employees, visible funding, growing customer base; Scale-up: 200+ employees, strong brand, significant ARR or valuation (unicorn status counts), >1000 customers; Enterprise: publicly listed, multinational, >1000 employees.
+- companyStage: one of "Pre-seed/Seed", "Series A/B", "Scale-up", "Enterprise". IMPORTANT: for any company you recognize (funded startups, unicorns, market leaders, public companies), USE YOUR GENERAL KNOWLEDGE FIRST — ignore page content signals for this field. Only use page content as a fallback for unknown companies. Examples of correct inference: Pennylane → Scale-up (French unicorn, 800+ employees, 100M€+ ARR); Notion → Scale-up; Salesforce → Enterprise; an unknown local SaaS with no visible funding → Pre-seed/Seed. Mapping for unknown companies: Pre-seed/Seed: <10 employees, just launched, no visible traction; Series A/B: 10-200 employees, visible funding, growing customer base; Scale-up: 200+ employees, strong brand, significant ARR or unicorn valuation; Enterprise: publicly listed, multinational, >1000 employees.
 - estimatedACV: infer from pricing page if found. Map to one of: "<1K", "1K-10K", "10K-50K", ">50K", "unknown". Use "unknown" if no pricing is visible.
 ${FEW_SHOT_EXAMPLE}
 
@@ -85,9 +85,9 @@ Required fields:
 - targetSectors: plausible sector(s) and company size
 - customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
 - primaryPainPoint: the most plausible pain point based on the domain
-- purchaseTrigger: the most plausible situation or event that triggers someone to buy this product (1-2 sentences, from the customer's perspective)
+- purchaseTrigger: the specific situation or event that makes someone urgently buy this product TODAY. Be concrete — the actual triggering moment, not a generic description. Write from the buyer's perspective, 1-2 sentences max.
 - competitors: JSON array of 2-3 competitors ACTIVELY present on the French market, inferred from your general knowledge about the domain/industry. Prioritize French or European competitors.
-- companyStage: one of "Pre-seed/Seed", "Series A/B", "Scale-up", "Enterprise". USE YOUR GENERAL KNOWLEDGE — if the company is publicly known, use that to determine their stage accurately.
+- companyStage: one of "Pre-seed/Seed", "Series A/B", "Scale-up", "Enterprise". USE YOUR GENERAL KNOWLEDGE FIRST — if the company is publicly known, use that to determine their stage accurately. Only use domain/URL signals as a last resort for truly unknown companies.
 - estimatedACV: best guess, one of "<1K", "1K-10K", "10K-50K", ">50K", "unknown"
 ${FEW_SHOT_EXAMPLE}`;
 
