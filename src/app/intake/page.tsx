@@ -827,10 +827,10 @@ export default function IntakePage() {
                 <label>Estimated Annual Contract Value (ACV)</label>
                 <select value={acv} onChange={(e) => setAcv(e.target.value)}>
                   <option value="" disabled>Select…</option>
-                  <option value="<1K">&lt; €1K — Self-serve / transactional</option>
-                  <option value="1K-10K">€1K – €10K — SMB</option>
-                  <option value="10K-50K">€10K – €50K — Mid-Market</option>
-                  <option value=">50K">&gt; €50K — Enterprise / custom</option>
+                  <option value="<1K">&lt; €1K / year</option>
+                  <option value="1K-10K">€1K – €10K / year</option>
+                  <option value="10K-50K">€10K – €50K / year</option>
+                  <option value=">50K">&gt; €50K / year</option>
                   <option value="unknown">Not sure</option>
                 </select>
               </div>

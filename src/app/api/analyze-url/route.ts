@@ -48,13 +48,13 @@ export async function POST(req: NextRequest) {
   const FEW_SHOT_EXAMPLE = `
 Example of expected output:
 {
-  "productName": "Pennylane",
-  "valueProposition": "Gives accountants and their SMB clients a single platform to manage invoicing, expenses, and accounting in real time.",
-  "targetSectors": "Accounting firms, SMB Finance — 1 to 50 employees",
+  "productName": "Pipedrive",
+  "valueProposition": "Helps sales teams close more deals by keeping their pipeline visible and their follow-ups on track.",
+  "targetSectors": "SMB and Mid-Market SaaS, Professional Services, Agencies",
   "customerType": "PME",
-  "primaryPainPoint": "Accountants waste hours reconciling data across disconnected tools and chasing clients for missing documents.",
-  "purchaseTrigger": "A growing SMB that outgrows spreadsheets and needs a tool their accountant can also access and validate.",
-  "competitors": ["Sage", "QuickBooks", "Cegid"],
+  "primaryPainPoint": "Sales reps lose track of deals and forget follow-ups without a structured pipeline view.",
+  "purchaseTrigger": "A startup that just hired its 3rd sales rep and realizes Excel can no longer track their pipeline.",
+  "competitors": ["Salesforce", "HubSpot CRM", "Sellsy"],
   "companyStage": "Scale-up",
   "estimatedACV": "1K-10K"
 }`;
@@ -70,8 +70,8 @@ Required fields:
 - customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
 - primaryPainPoint: the #1 pain point this product solves, one concrete and specific sentence
 - purchaseTrigger: the situation or event that triggers someone to buy this product (1-2 sentences, from the customer's perspective)
-- competitors: array of 2-3 competitor names. Look for "vs [product]", "[product] alternative", comparison pages, or integration pages in the content. If not found in content, infer from general knowledge for recognizable products. Return as JSON array of strings.
-- companyStage: one of "Pre-seed", "Seed", "Series A", "Scale-up", "Enterprise". Infer using these rules — Pre-seed/Seed: recently founded, <10 employees, no visible customer base; Series A: visible funding mentions, 10-200 employees, growing customer base; Scale-up: 200+ employees, "trusted by X000+ customers", known brand; Enterprise: publicly listed, >1000 employees, multinational presence. Use team size, customer count, funding mentions, press logos, or brand recognition.
+- competitors: array of 2-3 competitors ACTIVELY present on the French market today. Look for "vs [product]", "[product] alternative", comparison pages, or integration pages in the content. If not found in content, use your general knowledge about the French market for this product category. Exclude companies that have withdrawn from France (e.g. QuickBooks left France in 2020). Prioritize French or European competitors over US-only players. Return as JSON array of strings.
+- companyStage: one of "Pre-seed", "Seed", "Series A", "Scale-up", "Enterprise". Infer using ALL available signals — page content (employee count, customer count, funding mentions, press logos, "trusted by X" claims) AND your general knowledge (if the company is publicly known, a unicorn, listed, or widely covered, use that knowledge). Mapping: Pre-seed/Seed: <10 employees, just launched, no visible traction; Series A/B: 10-200 employees, visible funding, growing customer base; Scale-up: 200+ employees, strong brand, significant ARR or valuation (unicorn status counts), >1000 customers; Enterprise: publicly listed, multinational, >1000 employees.
 - estimatedACV: infer from pricing page if found. Map to one of: "<1K", "1K-10K", "10K-50K", ">50K", "unknown". Use "unknown" if no pricing is visible.
 ${FEW_SHOT_EXAMPLE}
 
