@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 
-type Step = 0 | 1 | 2 | 3 | 4;
+type Step = 0 | 1 | 2 | 3 | 4 | 5;
 
 type Step1Data = {
   productName: string;
@@ -39,17 +39,19 @@ export default function IntakePage() {
   // Step 1
   const [step1, setStep1] = useState<Step1Data>(initialStep1);
 
-  // Steps 2–4
+  // Steps 2–5
   const [purchaseTrigger, setPurchaseTrigger] = useState("");
   const [painPoint, setPainPoint] = useState("");
   const [competitors, setCompetitors] = useState("");
   const [companyStage, setCompanyStage] = useState("");
+  const [acv, setAcv] = useState("");
+  const [goal90days, setGoal90days] = useState("");
 
   // Tooltips for steps 2 & 3
   const [tooltip2, setTooltip2] = useState(false);
   const [tooltip3, setTooltip3] = useState(false);
 
-  const progressPercent = step === 0 ? 0 : step * 25;
+  const progressPercent = step === 0 ? 0 : step * 20;
 
   function validateUrl(value: string): boolean {
     const v = value.trim();
@@ -114,6 +116,15 @@ export default function IntakePage() {
       });
       if (data.primaryPainPoint) setPainPoint(data.primaryPainPoint);
       if (data.purchaseTrigger) setPurchaseTrigger(data.purchaseTrigger);
+      if (data.competitors) {
+        setCompetitors(
+          Array.isArray(data.competitors)
+            ? data.competitors.join(", ")
+            : data.competitors
+        );
+      }
+      if (data.companyStage) setCompanyStage(data.companyStage);
+      if (data.estimatedACV) setAcv(data.estimatedACV);
       setStep(1);
     } catch {
       setUrlWarning(
@@ -138,6 +149,8 @@ export default function IntakePage() {
     setPainPoint("");
     setCompetitors("");
     setCompanyStage("");
+    setAcv("");
+    setGoal90days("");
   }
 
   const btnBase: React.CSSProperties = {
@@ -270,7 +283,7 @@ export default function IntakePage() {
             style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}
           >
             <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#8B8B9E" }}>
-              Step {step} of 4
+              Step {step} of 5
             </span>
             <span style={{ fontFamily: "Inter, sans-serif", fontSize: 13, color: "#8B8B9E" }}>
               {progressPercent}%
@@ -748,10 +761,10 @@ export default function IntakePage() {
                 marginBottom: 8,
               }}
             >
-              Last two questions
+              Competitive landscape
             </h2>
             <p style={{ fontSize: 14, color: "#8B8B9E", marginBottom: 28 }}>
-              Almost there — just the competitive context.
+              Almost there — help us understand your competitive context.
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -782,14 +795,57 @@ export default function IntakePage() {
               </div>
             </div>
 
-            <button
-              disabled={!competitors.trim() || !companyStage}
-              style={
-                competitors.trim() && companyStage
-                  ? { ...btnBase, marginTop: 28 }
-                  : { ...btnDisabled, marginTop: 28 }
-              }
+            <button onClick={() => setStep(5)} style={{ ...btnBase, marginTop: 28 }}>
+              Continue →
+            </button>
+            <StartOver onReset={handleReset} />
+          </div>
+        )}
+
+        {/* ───── STEP 5 ───── */}
+        {step === 5 && (
+          <div>
+            <button onClick={() => setStep(4)} style={backBtn}>← Back</button>
+
+            <h2
+              style={{
+                fontFamily: "Space Grotesk, sans-serif",
+                fontSize: 22,
+                fontWeight: 600,
+                color: "#F0F0F0",
+                marginBottom: 8,
+              }}
             >
+              Last two questions
+            </h2>
+            <p style={{ fontSize: 14, color: "#8B8B9E", marginBottom: 28 }}>
+              This helps tailor your GTM recommendations.
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+              <div>
+                <label>Estimated Annual Contract Value (ACV)</label>
+                <select value={acv} onChange={(e) => setAcv(e.target.value)}>
+                  <option value="" disabled>Select…</option>
+                  <option value="<1K">&lt; €1K — Self-serve / transactional</option>
+                  <option value="1K-10K">€1K – €10K — SMB</option>
+                  <option value="10K-50K">€10K – €50K — Mid-Market</option>
+                  <option value=">50K">&gt; €50K — Enterprise / custom</option>
+                  <option value="unknown">Not sure</option>
+                </select>
+              </div>
+              <div>
+                <label>What's your #1 goal for the next 90 days?</label>
+                <AutoTextarea
+                  value={goal90days}
+                  onChange={(e) => setGoal90days(e.target.value)}
+                  placeholder="e.g. 10 demos booked, 3 signed clients, 500 signups"
+                  minRows={3}
+                />
+              </div>
+            </div>
+
+            <button style={{ ...btnBase, marginTop: 28 }}>
               Generate my GTM Playbook →
             </button>
             <StartOver onReset={handleReset} />

@@ -48,12 +48,15 @@ export async function POST(req: NextRequest) {
   const FEW_SHOT_EXAMPLE = `
 Example of expected output:
 {
-  "productName": "Pipedrive",
-  "valueProposition": "Helps sales teams close more deals by giving them a visual pipeline that shows exactly where each deal stands.",
-  "targetSectors": "SMB and Mid-Market SaaS, Professional Services, Agencies",
+  "productName": "Pennylane",
+  "valueProposition": "Gives accountants and their SMB clients a single platform to manage invoicing, expenses, and accounting in real time.",
+  "targetSectors": "Accounting firms, SMB Finance — 1 to 50 employees",
   "customerType": "PME",
-  "primaryPainPoint": "Sales reps lose track of follow-ups and deals slip through the cracks without a structured pipeline view.",
-  "purchaseTrigger": "A startup that just hired its 3rd sales rep and realizes Excel can't track their pipeline anymore."
+  "primaryPainPoint": "Accountants waste hours reconciling data across disconnected tools and chasing clients for missing documents.",
+  "purchaseTrigger": "A growing SMB that outgrows spreadsheets and needs a tool their accountant can also access and validate.",
+  "competitors": ["Sage", "QuickBooks", "Cegid"],
+  "companyStage": "Scale-up",
+  "estimatedACV": "1K-10K"
 }`;
 
   // Build prompt — infer from domain if page content unavailable
@@ -67,6 +70,9 @@ Required fields:
 - customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
 - primaryPainPoint: the #1 pain point this product solves, one concrete and specific sentence
 - purchaseTrigger: the situation or event that triggers someone to buy this product (1-2 sentences, from the customer's perspective)
+- competitors: array of 2-3 competitor names. Look for "vs [product]", "[product] alternative", comparison pages, or integration pages in the content. If not found in content, infer from general knowledge for recognizable products. Return as JSON array of strings.
+- companyStage: one of "Pre-seed", "Seed", "Series A", "Scale-up", "Enterprise". Infer using these rules — Pre-seed/Seed: recently founded, <10 employees, no visible customer base; Series A: visible funding mentions, 10-200 employees, growing customer base; Scale-up: 200+ employees, "trusted by X000+ customers", known brand; Enterprise: publicly listed, >1000 employees, multinational presence. Use team size, customer count, funding mentions, press logos, or brand recognition.
+- estimatedACV: infer from pricing page if found. Map to one of: "<1K", "1K-10K", "10K-50K", ">50K", "unknown". Use "unknown" if no pricing is visible.
 ${FEW_SHOT_EXAMPLE}
 
 Website content:
@@ -80,6 +86,9 @@ Required fields:
 - customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
 - primaryPainPoint: the most plausible pain point based on the domain
 - purchaseTrigger: the most plausible situation or event that triggers someone to buy this product (1-2 sentences)
+- competitors: array of 2-3 most likely competitors inferred from general knowledge about the domain/industry
+- companyStage: best guess from domain name and URL structure, one of "Pre-seed", "Seed", "Series A", "Scale-up", "Enterprise"
+- estimatedACV: best guess, one of "<1K", "1K-10K", "10K-50K", ">50K", "unknown"
 ${FEW_SHOT_EXAMPLE}`;
 
   // 2. Call Anthropic API
@@ -94,7 +103,7 @@ ${FEW_SHOT_EXAMPLE}`;
       },
       body: JSON.stringify({
         model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6",
-        max_tokens: 1000,
+        max_tokens: 1500,
         system:
           "You are a GTM analyst expert. Your job is to extract structured product information from website content to pre-fill a GTM intake form. Always respond in valid JSON only, no markdown, no preamble.",
         messages: [{ role: "user", content: userPrompt }],
