@@ -46,14 +46,14 @@ export async function POST(req: NextRequest) {
   }
 
   const FEW_SHOT_EXAMPLE = `
-Example of expected output for Pipedrive (pipedrive.com):
+Example of a perfect output for Pipedrive (pipedrive.com):
 {
   "productName": "Pipedrive",
   "valueProposition": "Sales teams close more deals by visualizing their entire pipeline and never missing a follow-up.",
   "targetSectors": "SMB and Mid-Market SaaS, Professional Services, Agencies",
   "customerType": "PME",
   "primaryPainPoint": "Sales reps lose track of deals and follow-ups when managing prospects in spreadsheets.",
-  "purchaseTrigger": "A startup just hired its 3rd sales rep and realizes spreadsheets can no longer track the pipeline reliably.",
+  "purchaseTrigger": "A startup just hired its 3rd sales rep and the founder realizes spreadsheets can no longer track who said what, who to follow up with, and which deals are actually moving forward.",
   "competitors": ["Salesforce", "HubSpot", "Zoho CRM"],
   "companyStage": "Scale-up",
   "estimatedACV": "1K-10K"
@@ -69,9 +69,9 @@ Required fields:
 - targetSectors: sector(s) and typical company size (e.g. "HR Tech, SMB to Mid-Market")
 - customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
 - primaryPainPoint: the #1 pain point this product solves, one concrete and specific sentence
-- purchaseTrigger: the specific situation or event that makes someone urgently buy this product TODAY. Look for: customer testimonials, use case pages, "who is it for" sections, onboarding triggers, or "before/after" scenarios on the site. Be specific and concrete — not "a company that needs X" but the actual triggering moment. Example for Pennylane: "A freelancer or early-stage founder just registered their business and needs to handle invoicing and VAT declarations from day one without hiring an accountant." Write from the buyer's perspective, 1-2 sentences max.
+- purchaseTrigger: the specific situation or event that makes someone urgently buy this product TODAY. Look for: customer testimonials, use case pages, "who is it for" sections, onboarding triggers, or "before/after" scenarios on the site. Be specific and concrete — not "a company that needs X" but the actual triggering moment. Example for Pipedrive: "A startup just hired its 3rd sales rep and the founder realizes spreadsheets can no longer track who said what, who to follow up with, and which deals are actually moving forward." Write from the buyer's perspective, 1-2 sentences max.
 - competitors: JSON array of 2-3 competitor names ACTIVELY present on the French market today. Look for "vs [product]", "[product] alternative", comparison pages, or integration pages in the content. For well-known brands (unicorns, funded startups, market leaders), USE YOUR GENERAL KNOWLEDGE of the French competitive landscape — do not rely only on page content. Exclude companies that have withdrawn from France (e.g. QuickBooks left France in 2020). Prioritize French or European competitors over US-only players.
-- companyStage: one of "Pre-seed/Seed", "Series A/B", "Scale-up", "Enterprise". IMPORTANT: for any company you recognize (funded startups, unicorns, market leaders, public companies), USE YOUR GENERAL KNOWLEDGE FIRST — ignore page content signals for this field. Only use page content as a fallback for unknown companies. Examples of correct inference: Pennylane → Scale-up (French unicorn, 800+ employees, 100M€+ ARR); Notion → Scale-up; Salesforce → Enterprise; an unknown local SaaS with no visible funding → Pre-seed/Seed. Mapping for unknown companies: Pre-seed/Seed: <10 employees, just launched, no visible traction; Series A/B: 10-200 employees, visible funding, growing customer base; Scale-up: 200+ employees, strong brand, significant ARR or unicorn valuation; Enterprise: publicly listed, multinational, >1000 employees.
+- companyStage: one of "Pre-seed/Seed", "Series A/B", "Scale-up", "Enterprise". BEFORE reading the website content below, identify if this company is publicly known. If yes, use your general knowledge exclusively and ignore page content for this field. Named examples: Pennylane → Scale-up, Notion → Scale-up, Salesforce → Enterprise, HubSpot → Scale-up, Intercom → Scale-up. Only fall back to page content for companies you have no prior knowledge of. Mapping for unknown companies: Pre-seed/Seed: <10 employees, just launched, no visible traction; Series A/B: 10-200 employees, visible funding, growing customer base; Scale-up: 200+ employees, strong brand, significant ARR or unicorn valuation; Enterprise: publicly listed, multinational, >1000 employees.
 - estimatedACV: infer from pricing page if found. Map to one of: "<1K", "1K-10K", "10K-50K", ">50K", "unknown". Use "unknown" if no pricing is visible.
 ${FEW_SHOT_EXAMPLE}
 
@@ -87,7 +87,7 @@ Required fields:
 - primaryPainPoint: the most plausible pain point based on the domain
 - purchaseTrigger: the specific situation or event that makes someone urgently buy this product TODAY. Be concrete — the actual triggering moment, not a generic description. Write from the buyer's perspective, 1-2 sentences max.
 - competitors: JSON array of 2-3 competitors ACTIVELY present on the French market, inferred from your general knowledge about the domain/industry. Prioritize French or European competitors.
-- companyStage: one of "Pre-seed/Seed", "Series A/B", "Scale-up", "Enterprise". USE YOUR GENERAL KNOWLEDGE FIRST — if the company is publicly known, use that to determine their stage accurately. Only use domain/URL signals as a last resort for truly unknown companies.
+- companyStage: one of "Pre-seed/Seed", "Series A/B", "Scale-up", "Enterprise". BEFORE using domain signals, identify if this company is publicly known. If yes, use your general knowledge exclusively. Named examples: Pennylane → Scale-up, Notion → Scale-up, Salesforce → Enterprise, HubSpot → Scale-up, Intercom → Scale-up. Only use domain/URL signals as a last resort for truly unknown companies.
 - estimatedACV: best guess, one of "<1K", "1K-10K", "10K-50K", ">50K", "unknown"
 ${FEW_SHOT_EXAMPLE}`;
 
