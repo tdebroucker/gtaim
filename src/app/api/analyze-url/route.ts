@@ -46,15 +46,15 @@ export async function POST(req: NextRequest) {
   }
 
   const FEW_SHOT_EXAMPLE = `
-Example of expected output:
+Example of expected output for Pipedrive (pipedrive.com):
 {
-  "productName": "Pennylane",
-  "valueProposition": "Freelancers and founders manage their invoicing, accounting, and bank account in one place — without needing an accountant for daily tasks.",
-  "targetSectors": "Freelancers, early-stage startups, SMBs — France",
-  "customerType": "B2C",
-  "primaryPainPoint": "Managing invoices, VAT, and accounting across disconnected tools wastes hours every month and creates costly errors.",
-  "purchaseTrigger": "A freelancer just registered their business and needs to handle invoicing and VAT from day one without hiring an accountant.",
-  "competitors": ["Sage", "Cegid", "Indy"],
+  "productName": "Pipedrive",
+  "valueProposition": "Sales teams close more deals by visualizing their entire pipeline and never missing a follow-up.",
+  "targetSectors": "SMB and Mid-Market SaaS, Professional Services, Agencies",
+  "customerType": "PME",
+  "primaryPainPoint": "Sales reps lose track of deals and follow-ups when managing prospects in spreadsheets.",
+  "purchaseTrigger": "A startup just hired its 3rd sales rep and realizes spreadsheets can no longer track the pipeline reliably.",
+  "competitors": ["Salesforce", "HubSpot", "Zoho CRM"],
   "companyStage": "Scale-up",
   "estimatedACV": "1K-10K"
 }`;
