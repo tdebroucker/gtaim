@@ -53,8 +53,8 @@ Example of expected output:
   "targetSectors": "SMB and Mid-Market SaaS, Professional Services, Agencies",
   "customerType": "PME",
   "primaryPainPoint": "Sales reps lose track of deals and forget follow-ups without a structured pipeline view.",
-  "purchaseTrigger": "A startup that just hired its 3rd sales rep and realizes Excel can no longer track their pipeline.",
-  "competitors": ["Salesforce", "HubSpot CRM", "Sellsy"],
+  "purchaseTrigger": "A startup that just hired its 3rd sales rep and realizes Excel can't track their pipeline anymore.",
+  "competitors": ["Salesforce", "HubSpot", "Zoho CRM"],
   "companyStage": "Scale-up",
   "estimatedACV": "1K-10K"
 }`;
@@ -70,14 +70,14 @@ Required fields:
 - customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
 - primaryPainPoint: the #1 pain point this product solves, one concrete and specific sentence
 - purchaseTrigger: the situation or event that triggers someone to buy this product (1-2 sentences, from the customer's perspective)
-- competitors: array of 2-3 competitors ACTIVELY present on the French market today. Look for "vs [product]", "[product] alternative", comparison pages, or integration pages in the content. If not found in content, use your general knowledge about the French market for this product category. Exclude companies that have withdrawn from France (e.g. QuickBooks left France in 2020). Prioritize French or European competitors over US-only players. Return as JSON array of strings.
-- companyStage: one of "Pre-seed", "Seed", "Series A", "Scale-up", "Enterprise". Infer using ALL available signals — page content (employee count, customer count, funding mentions, press logos, "trusted by X" claims) AND your general knowledge (if the company is publicly known, a unicorn, listed, or widely covered, use that knowledge). Mapping: Pre-seed/Seed: <10 employees, just launched, no visible traction; Series A/B: 10-200 employees, visible funding, growing customer base; Scale-up: 200+ employees, strong brand, significant ARR or valuation (unicorn status counts), >1000 customers; Enterprise: publicly listed, multinational, >1000 employees.
+- competitors: JSON array of 2-3 competitor names ACTIVELY present on the French market today. Look for "vs [product]", "[product] alternative", comparison pages, or integration pages in the content. For well-known brands (unicorns, funded startups, market leaders), USE YOUR GENERAL KNOWLEDGE of the French competitive landscape — do not rely only on page content. Exclude companies that have withdrawn from France (e.g. QuickBooks left France in 2020). Prioritize French or European competitors over US-only players.
+- companyStage: one of "Pre-seed/Seed", "Series A/B", "Scale-up", "Enterprise". IMPORTANT: for well-known companies (e.g. a unicorn, a company with 100M€+ ARR, a widely covered brand), USE YOUR GENERAL KNOWLEDGE to infer the stage accurately — do not rely only on page content. Only fall back to page content signals (employee count, customer count, funding mentions, "trusted by X" claims) for unknown companies. Mapping: Pre-seed/Seed: <10 employees, just launched, no visible traction; Series A/B: 10-200 employees, visible funding, growing customer base; Scale-up: 200+ employees, strong brand, significant ARR or valuation (unicorn status counts), >1000 customers; Enterprise: publicly listed, multinational, >1000 employees.
 - estimatedACV: infer from pricing page if found. Map to one of: "<1K", "1K-10K", "10K-50K", ">50K", "unknown". Use "unknown" if no pricing is visible.
 ${FEW_SHOT_EXAMPLE}
 
 Website content:
 ${pageText}`
-    : `The website at "${url}" could not be fetched. Based only on the domain name and URL path, infer the most plausible values and return a single valid JSON object. No markdown, no explanation — JSON only.
+    : `The website at "${url}" could not be fetched. Based on the domain name, URL path, and your general knowledge about this company or product category, infer the most plausible values and return a single valid JSON object. No markdown, no explanation — JSON only.
 
 Required fields:
 - productName: inferred from the domain
@@ -85,9 +85,9 @@ Required fields:
 - targetSectors: plausible sector(s) and company size
 - customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
 - primaryPainPoint: the most plausible pain point based on the domain
-- purchaseTrigger: the most plausible situation or event that triggers someone to buy this product (1-2 sentences)
-- competitors: array of 2-3 most likely competitors inferred from general knowledge about the domain/industry
-- companyStage: best guess from domain name and URL structure, one of "Pre-seed", "Seed", "Series A", "Scale-up", "Enterprise"
+- purchaseTrigger: the most plausible situation or event that triggers someone to buy this product (1-2 sentences, from the customer's perspective)
+- competitors: JSON array of 2-3 competitors ACTIVELY present on the French market, inferred from your general knowledge about the domain/industry. Prioritize French or European competitors.
+- companyStage: one of "Pre-seed/Seed", "Series A/B", "Scale-up", "Enterprise". USE YOUR GENERAL KNOWLEDGE — if the company is publicly known, use that to determine their stage accurately.
 - estimatedACV: best guess, one of "<1K", "1K-10K", "10K-50K", ">50K", "unknown"
 ${FEW_SHOT_EXAMPLE}`;
 
