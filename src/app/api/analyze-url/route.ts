@@ -52,7 +52,8 @@ export async function POST(req: NextRequest) {
   "productName": "the product name",
   "valueProposition": "one benefit-focused sentence, no marketing fluff",
   "targetSectors": "sector(s) and typical company size",
-  "customerType": "PME or Mid-Market or Enterprise"
+  "customerType": "PME or Mid-Market or Enterprise",
+  "primaryPainPoint": "the #1 pain point this product solves, one concrete sentence"
 }
 Website content: ${pageText}`
     : `The website at "${url}" could not be fetched. Based only on the domain name and URL path, infer best-effort values and return ONLY a valid JSON object with no markdown formatting and no explanation:
@@ -60,7 +61,8 @@ Website content: ${pageText}`
   "productName": "inferred product name from domain",
   "valueProposition": "one plausible benefit-focused sentence based on the domain",
   "targetSectors": "plausible sector(s) based on the domain",
-  "customerType": "PME or Mid-Market or Enterprise"
+  "customerType": "PME or Mid-Market or Enterprise",
+  "primaryPainPoint": "the most plausible pain point this product solves based on the domain"
 }`;
 
   // 2. Call Anthropic API

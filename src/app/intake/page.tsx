@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Step = 0 | 1 | 2 | 3 | 4;
 
@@ -112,6 +112,7 @@ export default function IntakePage() {
         targetSectors: data.targetSectors ?? "",
         customerType: data.customerType ?? "",
       });
+      if (data.primaryPainPoint) setPainPoint(data.primaryPainPoint);
       setStep(1);
     } catch {
       setUrlWarning(
@@ -221,10 +222,10 @@ export default function IntakePage() {
           color: #F0F0F0;
           font-family: Inter, sans-serif;
           font-size: 15px;
-          padding: 12px 14px;
+          padding: 12px 14px 14px;
           outline: none;
           transition: border-color 0.15s;
-          resize: vertical;
+          resize: none;
         }
         input:not([type="checkbox"])::placeholder, textarea::placeholder { color: #8B8B9E; }
         input:not([type="checkbox"]):focus, textarea:focus, select:focus { border-color: #FF6B35; }
@@ -565,8 +566,7 @@ export default function IntakePage() {
               </div>
               <div>
                 <label>Value proposition in one sentence</label>
-                <textarea
-                  rows={2}
+                <AutoTextarea
                   value={step1.valueProposition}
                   onChange={(e) => setStep1((s) => ({ ...s, valueProposition: e.target.value }))}
                 />
@@ -587,6 +587,7 @@ export default function IntakePage() {
                   onChange={(e) => setStep1((s) => ({ ...s, customerType: e.target.value }))}
                 >
                   <option value="" disabled>Select…</option>
+                  <option value="B2C">B2C / Particulier</option>
                   <option value="PME">PME</option>
                   <option value="Mid-Market">Mid-Market</option>
                   <option value="Enterprise">Enterprise</option>
@@ -653,11 +654,11 @@ export default function IntakePage() {
               </span>
             </div>
 
-            <textarea
-              rows={5}
+            <AutoTextarea
               value={purchaseTrigger}
               onChange={(e) => setPurchaseTrigger(e.target.value)}
               placeholder="Describe the situation or context that makes someone buy your product. e.g. A startup that just raised a Seed round and needs to structure their sales process. A VP Sales with a team > 5 reps."
+              minRows={5}
             />
 
             <button onClick={() => setStep(3)} style={{ ...btnBase, marginTop: 28 }}>
@@ -719,11 +720,11 @@ export default function IntakePage() {
               </span>
             </div>
 
-            <textarea
-              rows={5}
+            <AutoTextarea
               value={painPoint}
               onChange={(e) => setPainPoint(e.target.value)}
               placeholder="Be specific. e.g. Sales reps waste 3h/week copy-pasting data between tools. No visibility on pipeline health until it's too late."
+              minRows={5}
             />
 
             <button onClick={() => setStep(4)} style={{ ...btnBase, marginTop: 28 }}>
@@ -760,7 +761,7 @@ export default function IntakePage() {
                   type="text"
                   value={competitors}
                   onChange={(e) => setCompetitors(e.target.value)}
-                  placeholder="e.g. HubSpot, Pipedrive, Monday"
+                  placeholder="We couldn't identify competitors — add them manually"
                 />
               </div>
               <div>
@@ -775,6 +776,9 @@ export default function IntakePage() {
                   <option value="Series A">Series A</option>
                   <option value="Scale">Scale</option>
                 </select>
+                <p style={{ fontSize: 12, color: "#8B8B9E", marginTop: 6, fontFamily: "Inter, sans-serif" }}>
+                  Not sure? Check your last funding round or team size.
+                </p>
               </div>
             </div>
 
@@ -793,6 +797,43 @@ export default function IntakePage() {
         )}
       </div>
     </div>
+  );
+}
+
+function AutoTextarea({
+  value,
+  onChange,
+  placeholder,
+  minRows = 1,
+}: {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder?: string;
+  minRows?: number;
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }, [value]);
+
+  return (
+    <textarea
+      ref={ref}
+      rows={minRows}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      style={{ overflow: "hidden" }}
+      onInput={(e) => {
+        const t = e.currentTarget;
+        t.style.height = "auto";
+        t.style.height = t.scrollHeight + "px";
+      }}
+    />
   );
 }
 
