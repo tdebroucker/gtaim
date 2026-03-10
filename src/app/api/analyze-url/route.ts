@@ -95,6 +95,9 @@ Website content: ${pageText}`
     return NextResponse.json({ error: "auth_error" }, { status: 200 });
   }
   if (!anthropicRes.ok) {
+    const errorText = await anthropicRes.clone().text();
+    console.log("Anthropic error body:", errorText);
+    console.log("Model used:", process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6 (fallback)");
     console.log("Anthropic returned non-ok status:", anthropicRes.status);
     return NextResponse.json(
       { error: "Analysis failed. Please fill in the fields manually." },
