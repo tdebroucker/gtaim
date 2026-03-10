@@ -65,12 +65,12 @@ Example of a perfect output for Pipedrive (pipedrive.com):
 
 Required fields:
 - productName: the product or company name
-- valueProposition: analyze ALL sections and segments of the website (not just the hero/first section). If the product serves multiple customer types, synthesize the ONE core promise that unifies all segments. Write from the customer's perspective, benefit-focused, no marketing fluff, 1 sentence.
+- valueProposition: analyze ALL sections and segments of the website (not just the hero/first section). If the product serves multiple customer types, synthesize the ONE core promise that unifies all segments. Write from the customer's perspective, benefit-focused, no marketing fluff, 1 sentence. e.g. "Teams do X without needing Y"
 - targetSectors: sector(s) and typical company size (e.g. "HR Tech, SMB to Mid-Market")
 - customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
 - primaryPainPoint: the #1 pain point this product solves, one concrete and specific sentence
-- purchaseTrigger: the specific moment or situation that makes someone decide to buy NOW. Look across the full site: testimonials, use cases, "who is it for" pages, onboarding flows, before/after scenarios. Focus on workflow or context triggers (a new situation, a growth moment, a broken process) — not pricing or cost comparisons. 1-2 sentences, buyer's perspective, concrete.
-- competitors: JSON array of 2-3 competitors with the SAME job-to-be-done and SAME primary customer type as identified above. Use the French market (2025-2026). Prioritize direct competitors over legacy, niche, or adjacent players. Use general knowledge if not found on the page.
+- purchaseTrigger: the specific moment or situation that makes someone decide to buy NOW. Look across the full site: testimonials, use cases, "who is it for" pages, onboarding flows, before/after scenarios. Focus on workflow or context triggers — not pricing or cost comparisons. e.g. a growth event, a broken process, a new obligation. 1-2 sentences, buyer's perspective, concrete.
+- competitors: JSON array of 2-3 competitors with the SAME job-to-be-done and SAME primary customer type as identified above. e.g. direct competitors with same ICP and same job-to-be-done. Use the French market (2025-2026). Prioritize direct competitors over legacy, niche, or adjacent players. Use general knowledge if not found on the page.
 - companyStage: one of "Pre-seed/Seed", "Series A/B", "Scale-up", "Enterprise". BEFORE reading the website content below, identify if this company is publicly known. If yes, use your general knowledge exclusively and ignore page content for this field. Named examples: Pennylane → Scale-up, Notion → Scale-up, Salesforce → Enterprise, HubSpot → Scale-up, Intercom → Scale-up. Only fall back to page content for companies you have no prior knowledge of. Mapping for unknown companies: Pre-seed/Seed: <10 employees, just launched, no visible traction; Series A/B: 10-200 employees, visible funding, growing customer base; Scale-up: 200+ employees, strong brand, significant ARR or unicorn valuation; Enterprise: publicly listed, multinational, >1000 employees.
 - estimatedACV: infer from pricing page if found. Map to one of: "<1K", "1K-10K", "10K-50K", ">50K", "unknown". Use "unknown" if no pricing is visible.
 ${FEW_SHOT_EXAMPLE}
@@ -81,12 +81,12 @@ ${pageText}`
 
 Required fields:
 - productName: inferred from the domain
-- valueProposition: infer the ONE core promise that unifies the product's offer. Write from the customer's perspective, benefit-focused, no marketing fluff, 1 sentence.
+- valueProposition: infer the ONE core promise that unifies the product's offer. Write from the customer's perspective, benefit-focused, no marketing fluff, 1 sentence. e.g. "Teams do X without needing Y"
 - targetSectors: plausible sector(s) and company size
 - customerType: one of "B2C", "PME", "Mid-Market", or "Enterprise"
 - primaryPainPoint: the most plausible pain point based on the domain
-- purchaseTrigger: the specific moment or situation that makes someone decide to buy NOW. Focus on workflow or context triggers (a new situation, a growth moment, a broken process) — not pricing or cost comparisons. 1-2 sentences, buyer's perspective, concrete.
-- competitors: JSON array of 2-3 competitors with the SAME job-to-be-done and SAME primary customer type as identified above. Use the French market (2025-2026). Prioritize direct competitors over legacy, niche, or adjacent players. Infer from general knowledge about the domain/industry.
+- purchaseTrigger: the specific moment or situation that makes someone decide to buy NOW. Focus on workflow or context triggers — not pricing or cost comparisons. e.g. a growth event, a broken process, a new obligation. 1-2 sentences, buyer's perspective, concrete.
+- competitors: JSON array of 2-3 competitors with the SAME job-to-be-done and SAME primary customer type as identified above. e.g. direct competitors with same ICP and same job-to-be-done. Use the French market (2025-2026). Prioritize direct competitors over legacy, niche, or adjacent players. Infer from general knowledge about the domain/industry.
 - companyStage: one of "Pre-seed/Seed", "Series A/B", "Scale-up", "Enterprise". BEFORE using domain signals, identify if this company is publicly known. If yes, use your general knowledge exclusively. Named examples: Pennylane → Scale-up, Notion → Scale-up, Salesforce → Enterprise, HubSpot → Scale-up, Intercom → Scale-up. Only use domain/URL signals as a last resort for truly unknown companies.
 - estimatedACV: best guess, one of "<1K", "1K-10K", "10K-50K", ">50K", "unknown"
 ${FEW_SHOT_EXAMPLE}`;
