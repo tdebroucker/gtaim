@@ -406,17 +406,54 @@ export default function IntakePage() {
                     ?
                   </button>
                   {apiKeyTooltip && (
-                    <div style={tooltipBox}>
+                    <div style={{ ...tooltipBox, maxWidth: 320 }}>
                       <p style={tooltipText}>
                         GTAIM uses your own Anthropic API key to analyze your product and generate
                         your playbook. Your key is never stored on our servers.
-                        <br />
-                        <br />
-                        → Get your key at{" "}
-                        <span style={{ color: "#FF6B35" }}>console.anthropic.com</span> (API Keys →
-                        Create Key)
-                        <br />
-                        → Save it in a password manager (e.g. 1Password) for future use
+                      </p>
+
+                      <p style={{ ...tooltipText, marginTop: 10 }}>
+                        → Get your free API key at{" "}
+                        <a
+                          href="https://console.anthropic.com/settings/api-keys"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "#FF6B35", textDecoration: "underline" }}
+                        >
+                          console.anthropic.com
+                        </a>{" "}
+                        → API keys
+                      </p>
+
+                      <div
+                        style={{
+                          marginTop: 10,
+                          padding: "8px 10px",
+                          backgroundColor: "rgba(255,107,53,0.08)",
+                          border: "1px solid rgba(255,107,53,0.25)",
+                          borderRadius: 6,
+                        }}
+                      >
+                        <p style={{ ...tooltipText, color: "#FF6B35" }}>
+                          ⚠️ Claude.ai Pro/Max subscriptions don't include API access. You need a
+                          separate account at console.anthropic.com with prepaid credits.
+                        </p>
+                      </div>
+
+                      <p style={{ ...tooltipText, marginTop: 10, color: "#8B8B9E" }}>
+                        GTAIM uses ~$0.04 per playbook generated. $5 in credits = ~125 playbooks.
+                      </p>
+
+                      <p style={{ ...tooltipText, marginTop: 8 }}>
+                        →{" "}
+                        <a
+                          href="https://console.anthropic.com/settings/billing"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "#FF6B35", textDecoration: "underline" }}
+                        >
+                          console.anthropic.com/settings/billing
+                        </a>
                       </p>
                     </div>
                   )}
