@@ -680,8 +680,8 @@ export default function IntakePage() {
                   onChange={(e) => setStep1((s) => ({ ...s, customerType: e.target.value }))}
                 >
                   <option value="" disabled>Select…</option>
-                  <option value="B2C">B2C / Particulier</option>
-                  <option value="PME">PME</option>
+                  <option value="B2C">B2C / Consumer</option>
+                  <option value="PME">SME</option>
                   <option value="Mid-Market">Mid-Market</option>
                   <option value="Enterprise">Enterprise</option>
                 </select>
