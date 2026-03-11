@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import LinkedInLink from "./LinkedInLink";
 
 export const metadata: Metadata = {
   title: "GTAIM — AI-powered GTM, right on target",
@@ -476,16 +477,7 @@ export default function Home() {
         </div>
         <span className="footer-right">
           A personal project by{" "}
-          <a
-            href="https://www.linkedin.com/in/tdebroucker/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: "#FF6B35", textDecoration: "none" }}
-            onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
-            onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
-          >
-            Tristan de Broucker
-          </a>{" "}
+          <LinkedInLink />{" "}
           — putting Claude Code to work for the GTM community.
         </span>
       </footer>
