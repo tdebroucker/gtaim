@@ -71,6 +71,7 @@ Required fields:
 - purchaseTrigger: the specific moment or situation that makes someone decide to buy NOW. Look across the full site: testimonials, use cases, "who is it for" pages, onboarding flows, before/after scenarios. Focus on workflow or context triggers — not pricing or cost comparisons. e.g. a growth event, a broken process, a new obligation. 1-2 sentences, buyer's perspective, concrete.
 - competitors: array of 2-3 competitors actively present on the French market in 2025-2026. Rules: same job-to-be-done as the analyzed product; same primary customer as the identified customerType; prefer modern SaaS tools unless (a) no modern SaaS alternative exists for this use case, or (b) the analyzed product is itself a legacy tool. Do not name specific products in this instruction — infer competitors from the product's category, positioning, and customerType.
 - estimatedACV: infer from pricing page if found. Map to one of: "<1K", "1K-10K", "10K-50K", ">50K", "unknown". Use "unknown" if no pricing is visible.
+- disqualifiers: array of 2-3 criteria that make a prospect a bad fit for this product. Infer from: pricing page (minimum plan size), customer logos (implied company size), integrations required, positioning language. Focus on: company size too small, wrong industry, missing tech stack, no dedicated budget. e.g. ["Less than 10 employees", "No existing CRM", "Public sector only"]. Return empty array [] if you cannot infer with confidence.
 ${FEW_SHOT_EXAMPLE}
 
 Website content:
@@ -88,6 +89,7 @@ Required fields:
 - purchaseTrigger: the specific moment or situation that makes someone decide to buy NOW. Focus on workflow or context triggers — not pricing or cost comparisons. e.g. a growth event, a broken process, a new obligation. 1-2 sentences, buyer's perspective, concrete.
 - competitors: array of 2-3 competitors actively present on the French market in 2025-2026. Rules: same job-to-be-done as the analyzed product; same primary customer as the identified customerType; prefer modern SaaS tools unless (a) no modern SaaS alternative exists for this use case, or (b) the analyzed product is itself a legacy tool. Do not name specific products in this instruction — infer competitors from the product's category, positioning, and customerType.
 - estimatedACV: best guess, one of "<1K", "1K-10K", "10K-50K", ">50K", "unknown"
+- disqualifiers: array of 2-3 criteria that make a prospect a bad fit for this product. Infer from your general knowledge of this product: minimum company size, wrong industry, missing tech stack, no dedicated budget. e.g. ["Less than 10 employees", "No existing CRM", "Public sector only"]. Return empty array [] if you cannot infer with confidence.
 ${FEW_SHOT_EXAMPLE}`;
 
   // 2. Call Anthropic API

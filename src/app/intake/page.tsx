@@ -44,6 +44,7 @@ export default function IntakePage() {
   const [purchaseTrigger, setPurchaseTrigger] = useState("");
   const [painPoint, setPainPoint] = useState("");
   const [competitors, setCompetitors] = useState("");
+  const [disqualifiers, setDisqualifiers] = useState("");
   const [companyStage, setCompanyStage] = useState("");
   const [acv, setAcv] = useState("");
   const [goal90days, setGoal90days] = useState("");
@@ -125,6 +126,7 @@ export default function IntakePage() {
             : data.competitors
         );
       }
+      if (data.disqualifiers) setDisqualifiers(Array.isArray(data.disqualifiers) ? data.disqualifiers.join(", ") : data.disqualifiers);
       if (data.companyStage) setCompanyStage(data.companyStage);
       if (data.estimatedACV) setAcv(data.estimatedACV);
       setUrlFailed(data.urlFailed === true);
@@ -152,6 +154,7 @@ export default function IntakePage() {
     setPurchaseTrigger("");
     setPainPoint("");
     setCompetitors("");
+    setDisqualifiers("");
     setCompanyStage("");
     setAcv("");
     setGoal90days("");
@@ -855,6 +858,15 @@ export default function IntakePage() {
                   value={competitors}
                   onChange={(e) => setCompetitors(e.target.value)}
                   placeholder="We couldn't identify competitors — add them manually"
+                />
+              </div>
+              <div>
+                <label>Who is NOT a good fit?</label>
+                <input
+                  type="text"
+                  value={disqualifiers}
+                  onChange={(e) => setDisqualifiers(e.target.value)}
+                  placeholder="e.g. Companies with less than 10 employees, public sector, no sales team"
                 />
               </div>
               <div>
