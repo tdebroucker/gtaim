@@ -853,8 +853,7 @@ export default function IntakePage() {
             <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
               <div>
                 <label>Top 2-3 competitors your prospects mention</label>
-                <input
-                  type="text"
+                <AutoTextarea
                   value={competitors}
                   onChange={(e) => setCompetitors(e.target.value)}
                   placeholder="We couldn't identify competitors — add them manually"
@@ -862,28 +861,11 @@ export default function IntakePage() {
               </div>
               <div>
                 <label>Who is NOT a good fit?</label>
-                <input
-                  type="text"
+                <AutoTextarea
                   value={disqualifiers}
                   onChange={(e) => setDisqualifiers(e.target.value)}
                   placeholder="e.g. Companies with less than 10 employees, public sector, no sales team"
                 />
-              </div>
-              <div>
-                <label>Company stage</label>
-                <select
-                  value={companyStage}
-                  onChange={(e) => setCompanyStage(e.target.value)}
-                >
-                  <option value="" disabled>Select…</option>
-                  <option value="Pre-seed">Pre-seed</option>
-                  <option value="Seed">Seed</option>
-                  <option value="Series A">Series A</option>
-                  <option value="Scale">Scale</option>
-                </select>
-                <p style={{ fontSize: 12, color: "#8B8B9E", marginTop: 6, fontFamily: "Inter, sans-serif" }}>
-                  Not sure? Check your last funding round or team size.
-                </p>
               </div>
             </div>
 
@@ -908,7 +890,7 @@ export default function IntakePage() {
                 marginBottom: 8,
               }}
             >
-              Last two questions
+              Last few questions
             </h2>
             <p style={{ fontSize: 14, color: "#8B8B9E", marginBottom: 28 }}>
               This helps tailor your GTM recommendations.
@@ -925,6 +907,22 @@ export default function IntakePage() {
                   <option value=">50K">&gt; €50K / year</option>
                   <option value="unknown">Not sure</option>
                 </select>
+              </div>
+              <div>
+                <label>Company stage</label>
+                <select
+                  value={companyStage}
+                  onChange={(e) => setCompanyStage(e.target.value)}
+                >
+                  <option value="" disabled>Select…</option>
+                  <option value="Pre-seed">Pre-seed</option>
+                  <option value="Seed">Seed</option>
+                  <option value="Series A">Series A</option>
+                  <option value="Scale">Scale</option>
+                </select>
+                <p style={{ fontSize: 12, color: "#8B8B9E", marginTop: 6, fontFamily: "Inter, sans-serif" }}>
+                  Not sure? Check your last funding round or team size.
+                </p>
               </div>
               <div>
                 <label>What's your #1 goal for the next 90 days?</label>
