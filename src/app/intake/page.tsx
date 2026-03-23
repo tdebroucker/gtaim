@@ -102,16 +102,35 @@ export default function IntakePage() {
           goal90days,
         }),
       });
-      const data = await res.json();
-      if (data.error === "auth_error") {
-        setGenerateError("Invalid API key. Check your key at console.anthropic.com");
+      if (res.status === 200 && res.headers.get("content-type")?.includes("application/json")) {
+        // Error response (auth_error, generation failed, etc.)
+        const data = await res.json();
+        if (data.error === "auth_error") {
+          setGenerateError("Invalid API key. Check your key at console.anthropic.com");
+          return;
+        }
+        if (data.error) {
+          setGenerateError(data.error);
+          return;
+        }
+      }
+      if (!res.ok || !res.body) {
+        setGenerateError("Something went wrong. Please try again.");
         return;
       }
-      if (data.error) {
-        setGenerateError(data.error);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let markdown = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        markdown += decoder.decode(value, { stream: true });
+      }
+      if (!markdown) {
+        setGenerateError("Something went wrong. Please try again.");
         return;
       }
-      sessionStorage.setItem("gtaim_playbook", data.markdown);
+      sessionStorage.setItem("gtaim_playbook", markdown);
       sessionStorage.setItem("gtaim_product_name", step1.productName);
       router.push("/playbook");
     } catch {

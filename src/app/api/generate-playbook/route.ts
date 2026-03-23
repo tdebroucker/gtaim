@@ -230,6 +230,7 @@ Order by estimated ROI. Only propose bets coherent with the recommended motion.
       body: JSON.stringify({
         model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6",
         max_tokens: 8000,
+        stream: true,
         system: systemPrompt,
         messages: [{ role: "user", content: userPrompt }],
       }),
@@ -255,15 +256,44 @@ Order by estimated ROI. Only propose bets coherent with the recommended motion.
     );
   }
 
-  try {
-    const data = await anthropicRes.json();
-    const markdown: string = data.content?.[0]?.text ?? "";
-    return NextResponse.json({ markdown }, { status: 200 });
-  } catch (err) {
-    console.log("Parse failed:", String(err));
-    return NextResponse.json(
-      { error: "Generation failed. Please try again." },
-      { status: 200 }
-    );
-  }
+  const upstream = anthropicRes.body!;
+  const stream = new ReadableStream({
+    async start(controller) {
+      const reader = upstream.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+            const payload = line.slice(6).trim();
+            if (payload === "[DONE]") continue;
+            try {
+              const evt = JSON.parse(payload);
+              if (
+                evt.type === "content_block_delta" &&
+                evt.delta?.type === "text_delta"
+              ) {
+                controller.enqueue(new TextEncoder().encode(evt.delta.text));
+              }
+            } catch {
+              // skip malformed lines
+            }
+          }
+        }
+      } finally {
+        controller.close();
+        reader.releaseLock();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
 }
