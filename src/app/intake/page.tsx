@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 type Step = 0 | 1 | 2 | 3 | 4 | 5;
 
@@ -54,7 +55,52 @@ export default function IntakePage() {
   const [tooltip3, setTooltip3] = useState(false);
   const [tooltipBuyerProfile, setTooltipBuyerProfile] = useState(false);
 
+  const router = useRouter();
+  const [generating, setGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState("");
   const progressPercent = step === 0 ? 0 : step * 20;
+
+  async function handleGenerate() {
+    setGenerating(true);
+    setGenerateError("");
+    try {
+      const res = await fetch("/api/generate-playbook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: url ? (url.includes("://") ? url : "https://" + url) : "",
+          apiKey,
+          productName: step1.productName,
+          valueProposition: step1.valueProposition,
+          targetSectors: step1.targetSectors,
+          customerType: step1.customerType,
+          purchaseTrigger,
+          painPoint,
+          competitors,
+          disqualifiers,
+          companyStage,
+          acv,
+          goal90days,
+        }),
+      });
+      const data = await res.json();
+      if (data.error === "auth_error") {
+        setGenerateError("Invalid API key. Check your key at console.anthropic.com");
+        return;
+      }
+      if (data.error) {
+        setGenerateError(data.error);
+        return;
+      }
+      sessionStorage.setItem("gtaim_playbook", data.markdown);
+      sessionStorage.setItem("gtaim_product_name", step1.productName);
+      router.push("/playbook");
+    } catch {
+      setGenerateError("Something went wrong. Please try again.");
+    } finally {
+      setGenerating(false);
+    }
+  }
 
   function validateUrl(value: string): boolean {
     const v = value.trim();
@@ -935,8 +981,17 @@ export default function IntakePage() {
               </div>
             </div>
 
-            <button style={{ ...btnBase, marginTop: 28 }}>
-              Generate my GTM Playbook →
+            {generateError && (
+              <p style={{ color: "#FF4444", fontSize: 13, fontFamily: "Inter, sans-serif", marginTop: 12 }}>
+                {generateError}
+              </p>
+            )}
+            <button
+              onClick={handleGenerate}
+              disabled={generating}
+              style={{ ...(generating ? btnDisabled : btnBase), marginTop: 28 }}
+            >
+              {generating ? "Generating your playbook…" : "Generate my GTM Playbook →"}
             </button>
             <StartOver onReset={handleReset} />
           </div>
