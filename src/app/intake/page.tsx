@@ -60,6 +60,25 @@ export default function IntakePage() {
   const [generateError, setGenerateError] = useState("");
   const progressPercent = step === 0 ? 0 : step * 20;
 
+  const loadingMessages = [
+    "Scraping product page…",
+    "Analyzing your ICP…",
+    "Building positioning & messaging…",
+    "Mapping the competitive landscape…",
+    "Crafting GTM recommendations…",
+    "Almost there — finalizing your playbook…",
+  ];
+  const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
+
+  useEffect(() => {
+    if (!generating) return;
+    setLoadingMsgIndex(0);
+    const interval = setInterval(() => {
+      setLoadingMsgIndex((i) => (i < loadingMessages.length - 1 ? i + 1 : i));
+    }, 9000);
+    return () => clearInterval(interval);
+  }, [generating]);
+
   async function handleGenerate() {
     setGenerating(true);
     setGenerateError("");
@@ -991,8 +1010,65 @@ export default function IntakePage() {
               disabled={generating}
               style={{ ...(generating ? btnDisabled : btnBase), marginTop: 28 }}
             >
-              {generating ? "Generating your playbook…" : "Generate my GTM Playbook →"}
+              Generate my GTM Playbook →
             </button>
+
+            {/* Full-screen loading overlay */}
+            {generating && (
+              <div style={{
+                position: "fixed",
+                inset: 0,
+                backgroundColor: "rgba(10,10,15,0.96)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000,
+                gap: 24,
+              }}>
+                {/* Spinner */}
+                <div style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: "50%",
+                  border: "3px solid #2A2A3A",
+                  borderTopColor: "#FF6B35",
+                  animation: "spin 0.9s linear infinite",
+                }} />
+                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                <div style={{ textAlign: "center" }}>
+                  <p style={{
+                    fontFamily: "Space Grotesk, sans-serif",
+                    fontSize: 20,
+                    fontWeight: 600,
+                    color: "#F0F0F0",
+                    margin: 0,
+                  }}>
+                    Generating your GTM Playbook
+                  </p>
+                  <p style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: 14,
+                    color: "#8B8B9E",
+                    marginTop: 10,
+                    marginBottom: 0,
+                    minHeight: 20,
+                    transition: "opacity 0.4s",
+                  }}>
+                    {loadingMessages[loadingMsgIndex]}
+                  </p>
+                  <p style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: 12,
+                    color: "#4A4A5E",
+                    marginTop: 16,
+                    marginBottom: 0,
+                  }}>
+                    This usually takes 30–60 seconds
+                  </p>
+                </div>
+              </div>
+            )}
             <StartOver onReset={handleReset} />
           </div>
         )}

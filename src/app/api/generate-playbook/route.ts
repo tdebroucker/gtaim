@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Extend Vercel serverless function timeout to 60s (max on Hobby plan)
+// Playbook generation takes 30-60s depending on product complexity
+export const maxDuration = 60;
+
 function extractText(html: string): string {
   let text = html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
