@@ -62,11 +62,11 @@ export default function IntakePage() {
 
   const loadingMessages = [
     "Scraping product page…",
-    "Analyzing your ICP…",
-    "Building positioning & messaging…",
+    "Analyzing market opportunities & ICP…",
+    "Crafting positioning & messaging strategy…",
     "Mapping the competitive landscape…",
-    "Crafting GTM recommendations…",
-    "Almost there — finalizing your playbook…",
+    "Defining GTM motions & priority bets…",
+    "Almost there — assembling your playbook…",
   ];
   const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
 
