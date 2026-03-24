@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 
 // Four sequential Anthropic calls — one per chapter, up to 4 000 tokens each
 // Edge runtime: timeout applies per-chunk, not total duration — safe for long generations
@@ -356,20 +355,26 @@ Order by estimated ROI. Only propose bets coherent with the recommended motion.
             console.log(`Anthropic Call ${i + 2} fetch failed:`, String(err));
           }
         }
-        // Tracking — runs inside the stream while the execution context is still alive
+        // Tracking via Supabase REST API — works in Edge runtime without the JS client
         try {
-          const supabase = createClient(
-            process.env.SUPABASE_URL!,
-            process.env.SUPABASE_ANON_KEY!
-          );
-          await Promise.resolve(
-            supabase.from("playbook_generations").insert({
-              url,
-              product_name: productName,
-              company_stage: companyStage,
-              acv,
-              success: true,
-            })
+          await fetch(
+            `${process.env.SUPABASE_URL}/rest/v1/playbook_generations`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "apikey": process.env.SUPABASE_ANON_KEY!,
+                "Authorization": `Bearer ${process.env.SUPABASE_ANON_KEY!}`,
+                "Prefer": "return=minimal",
+              },
+              body: JSON.stringify({
+                url,
+                product_name: productName,
+                company_stage: companyStage,
+                acv,
+                success: true,
+              }),
+            }
           );
         } catch {
           // Never fail the generation if tracking fails
