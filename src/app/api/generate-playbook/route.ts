@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
 // Four sequential Anthropic calls — one per chapter, up to 4 000 tokens each
 // Edge runtime: timeout applies per-chunk, not total duration — safe for long generations
@@ -355,28 +356,29 @@ Order by estimated ROI. Only propose bets coherent with the recommended motion.
             console.log(`Anthropic Call ${i + 2} fetch failed:`, String(err));
           }
         }
+        // Tracking — runs inside the stream while the execution context is still alive
+        try {
+          const supabase = createClient(
+            process.env.SUPABASE_URL!,
+            process.env.SUPABASE_ANON_KEY!
+          );
+          await Promise.resolve(
+            supabase.from("playbook_generations").insert({
+              url,
+              product_name: productName,
+              company_stage: companyStage,
+              acv,
+              success: true,
+            })
+          );
+        } catch {
+          // Never fail the generation if tracking fails
+        }
       } finally {
         controller.close();
       }
     },
   });
-
-  // Fire-and-forget Supabase tracking — never blocks or fails the generation
-  import("@supabase/supabase-js").then(({ createClient }) => {
-    const supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_ANON_KEY!
-    );
-    Promise.resolve(
-      supabase.from("playbook_generations").insert({
-        url,
-        product_name: productName,
-        company_stage: companyStage,
-        acv,
-        success: true,
-      })
-    ).then(() => {}).catch(() => {});
-  }).catch(() => {});
 
   return new Response(stream, {
     headers: { "Content-Type": "text/plain; charset=utf-8" },
