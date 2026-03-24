@@ -361,6 +361,23 @@ Order by estimated ROI. Only propose bets coherent with the recommended motion.
     },
   });
 
+  // Fire-and-forget Supabase tracking — never blocks or fails the generation
+  import("@supabase/supabase-js").then(({ createClient }) => {
+    const supabase = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_ANON_KEY!
+    );
+    Promise.resolve(
+      supabase.from("playbook_generations").insert({
+        url,
+        product_name: productName,
+        company_stage: companyStage,
+        acv,
+        success: true,
+      })
+    ).then(() => {}).catch(() => {});
+  }).catch(() => {});
+
   return new Response(stream, {
     headers: { "Content-Type": "text/plain; charset=utf-8" },
   });
