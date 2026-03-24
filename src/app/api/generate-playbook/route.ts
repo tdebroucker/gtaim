@@ -358,13 +358,13 @@ Order by estimated ROI. Only propose bets coherent with the recommended motion.
         // Tracking via Supabase REST API — works in Edge runtime without the JS client
         try {
           const trackRes = await fetch(
-            `${process.env.SUPABASE_URL}/rest/v1/playbook_generations`,
+            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/playbook_generations`,
             {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                "apikey": process.env.SUPABASE_ANON_KEY!,
-                "Authorization": `Bearer ${process.env.SUPABASE_ANON_KEY!}`,
+                "apikey": process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+                "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
                 "Prefer": "return=minimal",
               },
               body: JSON.stringify({
