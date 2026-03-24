@@ -226,6 +226,7 @@ Order by estimated ROI. Only propose bets coherent with the recommended motion.
         "Content-Type": "application/json",
         "x-api-key": apiKey,
         "anthropic-version": "2023-06-01",
+        "anthropic-beta": "output-128k-2025-02-19",
       },
       body: JSON.stringify({
         model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6",
