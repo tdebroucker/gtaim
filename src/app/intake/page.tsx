@@ -61,11 +61,10 @@ export default function IntakePage() {
   const progressPercent = step === 0 ? 0 : step * 20;
 
   const loadingMessages = [
-    "Scraping product page…",
-    "Analyzing market opportunities & ICP…",
-    "Crafting positioning & messaging strategy…",
+    "Analyzing your market & ICP…",
+    "Building your positioning & messaging…",
     "Mapping the competitive landscape…",
-    "Defining GTM motions & priority bets…",
+    "Crafting your GTM recommendations…",
     "Almost there — assembling your playbook…",
   ];
   const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
@@ -75,7 +74,7 @@ export default function IntakePage() {
     setLoadingMsgIndex(0);
     const interval = setInterval(() => {
       setLoadingMsgIndex((i) => (i < loadingMessages.length - 1 ? i + 1 : i));
-    }, 9000);
+    }, 12000);
     return () => clearInterval(interval);
   }, [generating]);
 
