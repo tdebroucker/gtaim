@@ -357,7 +357,7 @@ Order by estimated ROI. Only propose bets coherent with the recommended motion.
         }
         // Tracking via Supabase REST API — works in Edge runtime without the JS client
         try {
-          await fetch(
+          const trackRes = await fetch(
             `${process.env.SUPABASE_URL}/rest/v1/playbook_generations`,
             {
               method: "POST",
@@ -376,8 +376,14 @@ Order by estimated ROI. Only propose bets coherent with the recommended motion.
               }),
             }
           );
-        } catch {
-          // Never fail the generation if tracking fails
+          if (!trackRes.ok) {
+            const errText = await trackRes.text();
+            console.log("Supabase tracking error:", trackRes.status, errText);
+          } else {
+            console.log("Supabase tracking success:", trackRes.status);
+          }
+        } catch (err) {
+          console.log("Supabase tracking fetch failed:", String(err));
         }
       } finally {
         controller.close();
