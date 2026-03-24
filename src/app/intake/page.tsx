@@ -74,7 +74,7 @@ export default function IntakePage() {
     setLoadingMsgIndex(0);
     const interval = setInterval(() => {
       setLoadingMsgIndex((i) => (i < loadingMessages.length - 1 ? i + 1 : i));
-    }, 12000);
+    }, 10000);
     return () => clearInterval(interval);
   }, [generating]);
 

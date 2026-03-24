@@ -71,7 +71,7 @@ function makeAnthropicRequest(
     },
     body: JSON.stringify({
       model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6",
-      max_tokens: 3000,
+      max_tokens: 1800,
       stream: true,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
@@ -163,7 +163,11 @@ ${
     : "**Note:** Product URL could not be scraped. Base the analysis on the product information above and your general knowledge."
 }`;
 
+  const tokenBudgetNotice = `IMPORTANT: Your response for this chapter must not exceed 1500 tokens. Be concise. Use tables instead of bullet lists where possible. No verbose introductions.`;
+
   const userPrompt1 = `Generate Chapter 1 of a GTM Playbook for the following product.
+
+${tokenBudgetNotice}
 
 ${productInfo}
 
@@ -199,6 +203,8 @@ Generate 2-3 ICPs maximum. For each ICP include:
 Prefix with ⚠️ (no SIRENE data). Show calculation logic. Apply penetration rate: Pre-seed 0.1% / Seed 0.3% / Series A 1% / Scale 3%. Add coherence check against the 90-day goal.`;
 
   const userPrompt2 = `Generate Chapter 2 of a GTM Playbook. This will be inserted directly after Chapter 1 — do NOT include a title header or any other chapter.
+
+${tokenBudgetNotice}
 
 ${productInfo}
 
@@ -239,6 +245,8 @@ Format: "Unlike [X], we [Y], which means [Z]."
 
   const userPrompt3 = `Generate Chapter 3 of a GTM Playbook. This will be inserted directly after Chapter 2 — do NOT include a title header or any other chapter.
 
+${tokenBudgetNotice}
+
 ${productInfo}
 
 ---
@@ -271,6 +279,8 @@ Markdown table: Solution / Pricing model / Primary target / Primary motion / Fra
 2-3 sentences: what makes the position durable and hard to copy short-term.`;
 
   const userPrompt4 = `Generate Chapter 4 of a GTM Playbook. This is the final chapter — do NOT include a title header or any other chapter.
+
+${tokenBudgetNotice}
 
 ${productInfo}
 
