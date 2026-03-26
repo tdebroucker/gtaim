@@ -71,7 +71,7 @@ function makeAnthropicRequest(
     },
     body: JSON.stringify({
       model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6",
-      max_tokens: 4000,
+      max_tokens: 6000,
       stream: true,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
@@ -120,11 +120,23 @@ export async function POST(req: NextRequest) {
 
 CRITICAL RULES:
 
+**On writing style:**
+- Be dense, not verbose. Every sentence must carry information or a decision.
+- No filler phrases ("It's worth noting that...", "In today's competitive landscape...", "This is particularly important because...").
+- Prefer tables over paragraphs when comparing multiple items.
+- Maximum 3 bullet points per sub-section unless a table is more appropriate.
+- If a section can be said in 2 sentences, do not use 5.
+- Write like a strategist briefing a CEO: precise, opinionated, backed by reasoning.
+
 **On factual accuracy:**
 - Only assert what you can reasonably infer from the scraped content or general market knowledge. If uncertain, flag it explicitly with ⚠️.
 - NEVER invent features, pricing, or capabilities. If a feature appears to come from a third-party integration or partner (not native to the product), say so explicitly: e.g., "via [Partner] integration".
 - For competitor analysis: use ONLY the competitors listed by the user. You may suggest 1-2 additional competitors, but ALWAYS mark them with "⚠️ Claude suggestion — to validate" and NEVER remove or substitute a competitor provided by the user.
 - If data is insufficient to estimate ACV for a competitor, write: "Insufficient public data to estimate."
+
+**On competitive alternatives:**
+- Always include "do nothing" and "status quo" (manual processes, spreadsheets, agencies) as competitive alternatives, not just SaaS competitors.
+- For each competitive category, explain WHY the target customer considers this alternative — not just WHAT it is.
 
 **On TAM/SAM/SOM:**
 - No SIRENE API data is available for this generation. Always prefix the section with: ⚠️ "Estimated without SIRENE data — figures are approximate."
@@ -188,14 +200,22 @@ Generate 2-3 ICPs maximum. For each ICP include:
   - Functional job → what they need to accomplish concretely
   - Emotional job → what they want to feel (infer carefully, flag if uncertain)
   - Social job → how they want to be perceived by peers
-- **Pain points**: current frictions
+- **Pain points**: current frictions (rank by severity 1-5)
 - **Purchase triggers**: events that create urgency
 - **Disqualifiers**: explicit exclusion criteria
 
-### 1.2 — Market Segmentation
-2-3 prioritized segments with justification.
+### 1.2 — Beachhead Segment Recommendation
+Score each ICP on 3 axes (1-5 each) in a table:
+| ICP | Pain Intensity | Reachability | Reference Density | Total | Recommendation |
+Pain Intensity = how urgent is the problem for this segment.
+Reachability = how easily can you reach them with available channels.
+Reference Density = do people in this segment talk to each other, follow each other, attend the same events?
+Recommend ONE beachhead segment (the segment to attack first) with a 2-sentence rationale.
 
-### 1.3 — TAM / SAM / SOM
+### 1.3 — Market Segmentation
+2-3 prioritized segments with justification. Keep it concise — the ICP section already provides detail.
+
+### 1.4 — TAM / SAM / SOM
 Prefix with ⚠️ (no SIRENE data). Show calculation logic. Apply penetration rate: Pre-seed 0.1% / Seed 0.3% / Series A 1% / Scale 3%. Add coherence check against the 90-day goal.`;
 
   const userPrompt2 = `Generate Chapter 2 of a GTM Playbook. This will be inserted directly after Chapter 1 — do NOT include a title header or any other chapter.
@@ -210,8 +230,18 @@ Start directly with the Chapter 2 header. Do NOT generate any other chapter.
 
 ## Chapter 2 — Positioning & Messaging
 
-### 2.1 — Positioning Statement
-Template: "For [ICP] who [pain], [Product] is a [category] that [outcome]. Unlike [alternative], we [differentiation wedge]."
+### 2.1 — Positioning (April Dunford Framework)
+Build the positioning in 6 sequential steps. Present each step as a row in a table:
+| Step | Question | Answer |
+|---|---|---|
+| 1. Competitive alternatives | What do customers do today without you? (include manual processes, spreadsheets, agencies, "do nothing") | ... |
+| 2. Unique attributes | What can you do that alternatives cannot? | ... |
+| 3. Value | What benefit do these unique attributes enable? | ... |
+| 4. Target segment | Who cares most about this value? | ... |
+| 5. Market category | What category makes your value obvious? | ... |
+| 6. Positioning statement | Synthesis | ... |
+
+Then write the positioning statement using template: "For [ICP] who [pain], [Product] is a [category] that [outcome]. Unlike [alternative], we [differentiation wedge]."
 
 ### 2.2 — Value Proposition by Persona (2-3 max)
 For each persona, 4-layer Value Nugget Framework as a Markdown table:
@@ -224,18 +254,21 @@ For each persona, 4-layer Value Nugget Framework as a Markdown table:
 If Pre-seed or Seed: use placeholders for proof — never invent numbers.
 
 ### 2.3 — Differentiation Wedge per Competitor
-Format: "Unlike [X], we [Y], which means [Z]."
+Format: "Unlike [X], we [Y], which means [Z]." One per competitor, max 3.
 
 ### 2.4 — Key Messages by Audience
-- End user (champion) → functional daily benefit
-- Economic buyer → ROI and risk
-- Peer / prescriber → social proof and credibility
+3 rows only:
+| Audience | Core message | What they need to hear |
+|---|---|---|
+| End user (champion) | Functional daily benefit | ... |
+| Economic buyer | ROI and risk reduction | ... |
+| Peer / prescriber | Social proof and credibility | ... |
 
 ### 2.5 — Elevator Pitch
-30 seconds, ready to use.
+30 seconds, ready to use. Max 4 sentences.
 
-### 2.6 — 💡 Tips: How to Test Your Messages
-3 methods by reliability: customer interviews, 5-second tests, A/B testing. Keep it concise.`;
+### 2.6 — 💡 How to Test Your Messages
+3 methods, 1 sentence each: customer interviews, 5-second tests, A/B testing. No more.`;
 
   const userPrompt3 = `Generate Chapter 3 of a GTM Playbook. This will be inserted directly after Chapter 2 — do NOT include a title header or any other chapter.
 
@@ -250,7 +283,14 @@ Start directly with the Chapter 3 header. Do NOT generate any other chapter.
 ## Chapter 3 — Competitive Analysis
 
 ### 3.1 — Competitive Landscape Map
-3 categories: Direct competitors / Substitutes / Indirect competitors.
+4 mandatory categories. For each, explain WHY the target customer considers this alternative:
+- **Direct competitors**: same problem, similar approach
+- **Indirect competitors**: same problem, different approach (e.g., agencies, consultants, adjacent tools)
+- **Status quo**: spreadsheets, manual processes, interns, "we've always done it this way"
+- **Do nothing**: the problem isn't painful enough to solve — assess the severity of inaction for each ICP
+
+Present as a table:
+| Category | Alternative | Why customers consider it | Threat level (High/Med/Low) |
 
 ### 3.2 — Battlecards (2-3 direct competitors max)
 For each competitor, Markdown table:
@@ -265,10 +305,10 @@ For each competitor, Markdown table:
 Add after each card: *⚠️ Based on public data and Claude's training (cutoff Aug 2025). Validate with your own win/loss data.*
 
 ### 3.3 — Positioning Matrix
-Markdown table: Solution / Pricing model / Primary target / Primary motion / France presence. 5-6 rows max.
+Markdown table: Solution / Pricing model / Primary target / Primary motion / France presence. 5-6 rows max. Include the product itself as the first row.
 
 ### 3.4 — Defensible Advantage
-2-3 sentences: what makes the position durable and hard to copy short-term.`;
+2-3 sentences max: what makes the position durable and hard to copy short-term.`;
 
   const userPrompt4 = `Generate Chapter 4 of a GTM Playbook. This is the final chapter — do NOT include a title header or any other chapter.
 
@@ -286,18 +326,28 @@ Start directly with the Chapter 4 header.
 If multiple ICP segments, motion matrix per segment:
 | Segment | Company size | Est. ACV | Motion | Rationale |
 |---|---|---|---|---|
-When multiple motions recommended: add organizational implication note.
+
+Score each recommended motion:
+| Criteria | Score (1-5) |
+|---|---|
+| Volume potential | ... |
+| Expected CAC efficiency | ... |
+| Time to first revenue | ... |
+| Scalability | ... |
+| Team fit (current resources) | ... |
+
+Conclude with a clear verdict: "Double down on" (1 motion) + "Experiment with" (1 motion) + "Not yet" (others, if any). When multiple motions recommended: add one sentence on organizational implication.
 
 ### 4.2 — Priority Channels by Motion
-For each motion, table of 3-4 channels:
-| Channel | Why for this target |
-|---|---|
+For each recommended motion, table of 3-4 channels:
+| Channel | Why for this target | Expected effort |
+|---|---|---|
 
 ### 4.3 — Priority Bets (3-5)
 For each bet:
-**Bet:** Concrete action
-**Hypothesis:** What we're trying to validate
-**Success signal:** Simple, observable metric
+**Bet:** Concrete action (1 sentence)
+**Hypothesis:** What we're trying to validate (1 sentence)
+**Success signal:** Simple, observable metric that doubles as "validate before scaling" criteria
 Order by estimated ROI. Only propose bets coherent with the recommended motion.
 
 ### 4.4 — Disclaimer
