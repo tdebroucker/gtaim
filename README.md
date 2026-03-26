@@ -22,28 +22,57 @@ GTAIM is a web tool that automatically generates a structured GTM Playbook from 
 
 ## 🗺️ Roadmap
 
-### ✅ MVP — Foundations
+### ✅ MVP — Foundations (v0.1 → v0.3)
 - [x] Landing page (EN) — vitrine with Coming Soon
-- [ ] 2-step intake form (8 questions)
-- [ ] Product URL web scraping
-- [ ] Claude API — Step 1: auto-fill form from URL analysis
-- [ ] Claude API — Step 2: generate full GTM Playbook
-- [ ] TAM/SAM/SOM via API SIRENE (INSEE)
-- [ ] Structured web output (4 sections)
-- [ ] Guest mode (no account required)
-- [ ] BYOK — Bring Your Own Anthropic API Key
+- [x] 5-step intake form (11 fields)
+- [x] Product URL web scraping (best-effort, fallback to manual)
+- [x] Claude API — Step 1: auto-fill form from URL analysis
+- [x] Claude API — Step 2: generate full GTM Playbook (4 chapters, streaming)
+- [x] Structured web output (Markdown → HTML via react-markdown)
+- [x] Guest mode (no account required)
+- [x] BYOK — Bring Your Own Anthropic API Key (never stored server-side)
+- [x] Edge runtime + streaming (4 sequential API calls, no timeout)
+- [x] Playbook generation tracking (Supabase)
+- [x] Unknown URL handling (empty strings + warning banner)
 
-### 🔜 V1.1 — Users & Deliverables
+### 🔧 v0.4 — Prompt Enrichment (next)
+- [ ] Enrich playbook prompts with GTM Strategist frameworks (beachhead scoring, April Dunford positioning, 4-category competitive map, motion scoring)
+- [ ] Anti-verbosity directive in system prompt
+- [ ] `max_tokens` increase (4 000 → 6 000)
+- [ ] Condense ICP format (compact tables vs. verbose text)
+- [ ] Tighten elevator pitch constraint (max 3 sentences)
+
+### 🔧 v0.5 — Intake Enrichment
+- [ ] Add "Key differentiator" field (Step 4 — after competitors)
+- [ ] Add "Pricing model" select (Step 5 — above ACV)
+- [ ] Add "GTM team size" select (Step 5 — after company stage)
+- [ ] Add "Current traction" text field (Step 5 — after 90-day goal)
+- [ ] Update playbook prompts to use new intake fields
+- [ ] Update analyze-url prompt to pre-fill new fields from scraping
+
+### 🔜 v1.0 — Polish & Ship
+- [ ] Playbook result page design polish
+- [ ] Copy-to-clipboard + share link
+- [ ] Mobile responsiveness audit
+- [ ] Error states & edge case handling review
+- [ ] TAM/SAM/SOM via API SIRENE (INSEE) — France-first differentiator
+
+### 🔜 v1.1 — Users & Deliverables
 - [ ] User account creation
 - [ ] Encrypted API key storage
 - [ ] Playbook history
 - [ ] PDF export
 
-### 🔜 V1.2 — Contextual Enrichment
+### 🔜 v1.2 — Playbook Expansion
+- [ ] Pricing Positioning chapter (Ch.2.5 — product vs competitors on price/value grid)
+- [ ] 90-Day Launch Plan chapter (actionable milestones aligned to user's goal)
+- [ ] "Deep Dive" mode (interactive, question-by-question playbook generation)
+
+### 🔜 v1.3 — Contextual Enrichment
 - [ ] Integrations Hub (CRM, Sales call transcripts, user feedback)
 - [ ] Dynamic ICP (updated via integrations)
 
-### 🔜 V2 — Scale
+### 🔜 v2 — Scale
 - [ ] ICP Scoring
 - [ ] Team collaboration
 - [ ] Freemium model
@@ -51,12 +80,12 @@ GTAIM is a web tool that automatically generates a structured GTM Playbook from 
 
 ---
 
-## 🧩 GTM Playbook Output (4 sections)
+## 🧩 GTM Playbook Output (4 chapters)
 
-1. **Market & ICP** — Target segments, TAM/SAM/SOM (SIRENE data — France-first)
-2. **Positioning & Messaging** — Value prop, key messages per persona
-3. **Competitive Analysis** — Battlecards, differentiators
-4. **GTM Recommendations** — PLG / SLG / ABM initiatives based on stage
+1. **Market & ICP** — ICPs with JTBD, beachhead scoring, market segmentation, TAM/SAM/SOM
+2. **Positioning & Messaging** — April Dunford framework, value props by persona, differentiation wedges, elevator pitch
+3. **Competitive Analysis** — 4-category landscape (direct, indirect, status quo, do nothing), battlecards, positioning matrix
+4. **GTM Recommendations** — Motion scoring & verdict, priority channels, priority bets with success signals
 
 ---
 
@@ -149,15 +178,17 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
 gtaim/
 ├── src/app/
-│   ├── page.tsx          # Landing page
-│   ├── intake/           # Intake form (2 steps)
-│   └── playbook/         # Playbook output
-├── components/           # Reusable UI components
-├── lib/                  # Claude API, Supabase, scraping utils
-├── public/               # Static assets (logo, favicon)
-│   ├── gtaim-logo.svg
+│   ├── page.tsx                    # Landing page
+│   ├── intake/page.tsx             # 5-step intake form
+│   ├── playbook/page.tsx           # Playbook result page
+│   └── api/
+│       ├── analyze-url/route.ts    # Claude API — URL analysis & form pre-fill
+│       └── generate-playbook/route.ts  # Claude API — 4-chapter playbook generation (streaming)
+├── public/                         # Static assets (logo, favicon)
+│   ├── gtaim-logo-v6.svg
 │   └── gtaim-favicon.svg
-├── DESIGN_SYSTEM.md      # Brand & design reference
+├── CLAUDE.md                       # Instructions for Claude Code
+├── DESIGN_SYSTEM.md                # Brand & design reference
 └── README.md
 ```
 
@@ -181,26 +212,14 @@ gtaim/
 |---|---|
 | BYOK at MVP | No API key stored server-side — zero AI infra cost |
 | Double Claude API call | Call 1: infer form answers from URL / Call 2: generate playbook |
+| 4 sequential streaming calls | One per chapter, Edge runtime keeps connection alive — no timeout |
+| `max_tokens: 6000` per call | Allows rich structured output (tables, scoring) without truncation |
 | Scraping best-effort | Manual fallback if site is JS-heavy or inaccessible |
 | France-first | SIRENE API as differentiator — TAM/SAM/SOM from public INSEE data |
 | PDF deferred to V1.1 | Web output sufficient to validate usage before investing in rendering |
 | Next.js over Flask | Better free tier (Vercel), larger community, stronger for personal branding |
 | develop branch | Feature work isolated from production — merge to main only when validated |
-
----
-
-## 📝 Learnings & LinkedIn
-
-This project is documented live on LinkedIn as a learning journey around **Claude Code** and **AI-assisted product building**.
-
-Key posts planned:
-- "I launched a side project — here's why"
-- "How I position a GTM tool in 2026"
-- "The 8 questions every good GTM must answer"
-- "Reducing form friction by 80% with Claude"
-- "How I instruct Claude to generate a GTM Playbook"
-- "Calculating TAM with French public data (SIRENE API)"
-- "My no-budget stack to ship a side project in 2026"
+| Prompt frameworks | Beachhead scoring, April Dunford, 4-cat competitive map — inspired by GTM Strategist methodology |
 
 ---
 
@@ -208,6 +227,7 @@ Key posts planned:
 
 | Date | Version | Notes |
 |---|---|---|
+| March 2026 | 0.3 | Intake form + playbook generation live (5 steps, 4-chapter streaming, Edge runtime). Prompt enrichment with GTM Strategist frameworks (beachhead, April Dunford, 4-cat competitive map, motion scoring). Anti-verbosity directive. |
 | March 2026 | 0.2 | Landing page live — GitHub + Vercel + custom domain setup, develop branch |
 | March 2026 | 0.1 | Project init — branding, domain, design system, stack decisions |
 
